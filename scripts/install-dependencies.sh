@@ -77,8 +77,9 @@ PACKAGES_PACMAN=(
     "python-pip"
 )
 
-packages_zypper=(
+PACKAGES_ZYPPER=(
     "fd"
+    "diff-so-fancy"
     "gh"
     "gcc"
     "gcc-c++"
@@ -90,10 +91,19 @@ packages_zypper=(
     "tree-sitter"
     "k9s"
     "kubernetes-client"
+    "kubectx"
+    "minikube"
+    "stern"
+    "libpq5"
+    "bpytop"
     "asciinema"
     "coreutils"
     "fswatch"
     "gpg2"
+    "lazygit"
+    "stylua"
+    "shfmt"
+    "wireguard-tools"
 )
 #endregion package definitions
 
@@ -156,8 +166,8 @@ install_dependencies() {
             install_cmd="pacman -Sy --noconfirm --needed"
             ;;
         opensuse*)
-            pkgs=("${PACKAGES_COMMON[@]}" "${packages_zypper[@]}")
-            install_cmd="zypper --ignore-unknown install -y"
+            pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_ZYPPER[@]}")
+            install_cmd="zypper install -y"
             ;;
         alpine)
             pkgs=("${PACKAGES_COMMON[@]}" "python3" "build-base")
