@@ -1,4 +1,4 @@
-export VISUAL=$(which vim)
+export VISUAL=$(which nvim)
 export EDITOR="$VISUAL"
 
 if grep -q 'openSUSE' /etc/os-release; then

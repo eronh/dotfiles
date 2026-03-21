@@ -17,6 +17,9 @@
     ~/.zshrc:
       force: true
       path: home/.zsh/.zshrc
+    ~/.zshenv:
+      force: true
+      path: home/.zsh/.zshenv
     ~/.p10k.zsh: home/.p10k.zsh
 
     # terminal emulators

@@ -8,6 +8,9 @@ fi
 
 typeset -U path  # Make sure PATH entries are unique
 
+# To customize prompt, run `p10k configure` or edit ~/Workbench/dotfiles/home/.p10k.zsh.
+[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
+
 source $HOME/.zsh/options.zsh
 source $HOME/.zsh/functions.zsh
 source $HOME/.zsh/plugins.zsh
@@ -16,9 +19,6 @@ source $HOME/.zsh/keybindings.zsh
 source $HOME/.zsh/exports.zsh
 
 command -v fzf >/dev/null && source <(fzf --zsh)
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 is_installed mise && eval "$($HOME/.local/bin/mise activate zsh)"
 is_installed direnv && eval "$(direnv hook zsh)"
@@ -32,6 +32,5 @@ compinit
 
 export PATH="/opt/homebrew/sbin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/opt/gawk/libexec/gnubin:$PATH"
 
 is_installed agy && export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
