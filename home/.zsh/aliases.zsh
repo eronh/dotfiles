@@ -10,6 +10,14 @@ alias g-="git switch -"
 alias glr="git pull --rebase"
 alias grbo="git rebase --onto <new> <old> <current-branch>"
 
+if grep -q 'openSUSE' /etc/os-release; then
+    alias zref="sudo zypper refresh"
+    alias zdup="sudo zypper -v dist-upgrade --download-in-advance"
+    alias zin="sudo zypper -v install"
+    alias zse="zypper search"
+fi
+
+
 # .oh-my-zsh/lib/directories.zsh
 # Changing/making/removing directory
 setopt auto_cd

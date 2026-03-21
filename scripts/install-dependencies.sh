@@ -157,7 +157,7 @@ install_dependencies() {
             ;;
         opensuse*)
             pkgs=("${PACKAGES_COMMON[@]}" "${packages_zypper[@]}")
-            install_cmd="zypper install -y"
+            install_cmd="zypper --ignore-unknown install -y"
             ;;
         alpine)
             pkgs=("${PACKAGES_COMMON[@]}" "python3" "build-base")
@@ -177,7 +177,7 @@ install_dependencies() {
                 install_cmd="pacman -S --noconfirm --needed"
             elif command_exists zypper; then
                 pkgs=("${PACKAGES_COMMON[@]}")
-                install_cmd="zypper install -y"
+                install_cmd="zypper --ignore-unknown install -y"
             elif command_exists apk; then
                 pkgs=("${PACKAGES_COMMON[@]}")
                 install_cmd="apk add --no-cache"
