@@ -122,7 +122,11 @@ return {
         end, { desc = "[F]ind [F]iles" })
 
         vim.keymap.set("n", "<leader>sg", function()
-            my_custom_picker(builtin.live_grep)
+            my_custom_picker(function()
+                builtin.live_grep({
+                    additional_args = { "--hidden", "--no-ignore" },
+                })
+            end)
         end, { desc = "[S]earch by [G]rep" })
 
         vim.keymap.set("n", "<leader>sh", function()
