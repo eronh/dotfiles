@@ -10,16 +10,13 @@
     ~/.bashrc:
       path: home/.bashrc
       force: true
-
     ~/.zsh:
       force: true
       path: home/.zsh
     ~/.zshrc:
       force: true
       path: home/.zsh/.zshrc
-    ~/.zshenv:
-      force: true
-      path: home/.zsh/.zshenv
+    ~/.zshenv: home/.zsh/.zshenv
     ~/.p10k.zsh: home/.p10k.zsh
 
     # terminal emulators
@@ -50,7 +47,9 @@
       path: home/.config/mise
     ~/.gitconfig: home/.gitconfig
     ~/.git/hooks/prevent-force-push: home/.config/git/hooks/prevent-force-push
-    ~/.inputrc: .inputrc
+    ~/.inputrc:
+      path: .inputrc
+      force: true
     ~/.tmux.conf: home/.tmux.conf
     ~/.Brewfile: home/Brewfile
     ~/.finicky.ts: home/finicky.ts
@@ -97,6 +96,11 @@
 
     - description: "Install fonts"
       command: "sh ./scripts/install-fonts.sh"
+
+    - description: "Install alacritty themes"
+      command: |
+        mkdir -p ~/.config/alacritty/themes
+        git clone https://github.com/alacritty/alacritty-theme ~/.config/alacritty/themes
 
     - description: "Configure PM2 logrotate"
       command: "sh ./scripts/pm2-logrotate.sh"

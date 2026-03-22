@@ -167,7 +167,7 @@ install_dependencies() {
             ;;
         opensuse*)
             pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_ZYPPER[@]}")
-            install_cmd="zypper install -y"
+            install_cmd="zypper --ignore-unknown install -y"
             ;;
         alpine)
             pkgs=("${PACKAGES_COMMON[@]}" "python3" "build-base")
