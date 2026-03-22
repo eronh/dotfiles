@@ -21,14 +21,14 @@ style = "Regular"
 [window]
 startup_mode = "Maximized"
 option_as_alt = "Both"
-# decorations = 'none'
+decorations = 'buttonless'
 dynamic_title = true
 blur = true
 opacity = 1
 
 [window.padding]
-x = 8
-y = 8
+x = 0
+y = 0
 
 [general]
 import = [
@@ -186,6 +186,10 @@ chars = "\u0002%" # Sends Ctrl+B % (tmux horizontal split)
 # key = "T"
 # mods = "Control"
 # action = "CreateNewTab"
+[[keyboard.bindings]]
+key = "Return"
+mods = "Command"
+action = "ToggleSimpleFullscreen"
 
 # Tabs navigation
 [[keyboard.bindings]]
