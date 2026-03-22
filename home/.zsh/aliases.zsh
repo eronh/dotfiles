@@ -10,7 +10,7 @@ alias g-="git switch -"
 alias glr="git pull --rebase"
 alias grbo="git rebase --onto <new> <old> <current-branch>"
 
-if grep -q 'openSUSE' /etc/os-release; then
+if [[ -f /etc/os-release ]]  && grep -q 'openSUSE' /etc/os-release; then
     alias zref="sudo zypper refresh"
     alias zdup="sudo zypper -v dist-upgrade --download-in-advance"
     alias zin="sudo zypper -v install"
