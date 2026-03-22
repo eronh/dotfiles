@@ -15,7 +15,9 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit light zsh-users/zsh-autosuggestions
 zinit light zdharma-continuum/fast-syntax-highlighting
 zinit light zsh-users/zsh-completions
-# zinit light MichaelAquilina/zsh-you-should-use
+
+zinit load 'zsh-users/zsh-history-substring-search'
+zinit ice wait atload '_history_substring_search_config'
 
 # OMZ plugins and utilities
 zinit snippet OMZ::lib/compfix.zsh
