@@ -14,7 +14,7 @@ if file then
                 colorscheme = "solarized"
             else
                 vim.opt.background = "dark"
-                colorscheme = "catppuccin-frappe"
+                colorscheme = "nord"
             end
 
             local ok, _ = pcall(vim.cmd, "colorscheme " .. colorscheme)
