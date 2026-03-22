@@ -38,7 +38,13 @@ end
 vim.keymap.set("n", "<leader>tt", select_colorscheme)
 
 return {
-    { "ellisonleao/gruvbox.nvim", name = "gruvbox" },
+    {
+        "ellisonleao/gruvbox.nvim",
+        name = "gruvbox",
+        opts = {
+            contrast = "soft",
+        },
+    },
     { "catppuccin/nvim", name = "catppuccin" },
     { "shaunsingh/nord.nvim", name = "nord" },
     { "rose-pine/neovim", name = "rose-pine" },
@@ -48,13 +54,11 @@ return {
     {
         "maxmx03/solarized.nvim",
         name = "solarized",
-        config = function()
-            require("solarized").setup({
-                variant = "winter", -- "spring" | "summer" | "autumn" | "winter"
-                palette = "solarized", -- "solarized" | "selenized"
-                transparent = { enabled = true },
-            })
-        end,
+        opts = {
+            variant = "winter", -- "spring" | "summer" | "autumn" | "winter"
+            palette = "solarized", -- "solarized" | "selenized"
+            transparent = { enabled = false },
+        },
     },
     { "EdenEast/nightfox.nvim" },
     { "navarasu/onedark.nvim" },
