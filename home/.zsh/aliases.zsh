@@ -1,8 +1,7 @@
-alias c=clear && printf '\e[3J'
-alias nv=$(which nvim)
+alias c="clear && printf '\e[3J'"
+alias vim=$(which nvim)
 alias xablau="npm run dev:debug"
 alias xcurl="curl -o /dev/null -s -w %{time_total}"
-alias j='z'
 alias jw='cd $HOME/Workbench/'
 
 alias gs="git sync"
@@ -16,7 +15,6 @@ if [[ -f /etc/os-release ]]  && grep -q 'openSUSE' /etc/os-release; then
     alias zin="sudo zypper -v install"
     alias zse="zypper search"
 fi
-
 
 # .oh-my-zsh/lib/directories.zsh
 # Changing/making/removing directory
@@ -81,6 +79,3 @@ alias c="clear && printf '\e[3J'"
 # deduplicate history
 alias histclean='nl ~/.bash_history | sort -k 2  -k 1,1nr| uniq -f 1 | sort -n | cut -f 2 > unduped_history && cp unduped_history ~/.bash_history'
 
-#
-# Airtm
-alias le="local-env-palkia"
