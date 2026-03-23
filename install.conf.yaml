@@ -99,8 +99,14 @@
 
     - description: "Install alacritty themes"
       command: |
-        mkdir -p ~/.config/alacritty/themes
-        git clone https://github.com/alacritty/alacritty-theme ~/.config/alacritty/themes
+        THEMES_DIR=$HOME/.config/alacritty/themes
+        REPO_URL=https://github.com/alacritty/alacritty-theme
+        if [ ! -d "$THEMES_DIR" ] ; then
+          git clone "$REPO_URL" "$THEMES_DIR"
+        else
+          cd "$THEMES_DIR"
+          git pull "$REPO_URL"
+        fi
 
     - description: "Configure PM2 logrotate"
       command: "sh ./scripts/pm2-logrotate.sh"
