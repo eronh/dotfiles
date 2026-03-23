@@ -33,4 +33,22 @@ compinit
 export PATH="/opt/homebrew/sbin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 
-is_installed agy && export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+# Only run this if we are inside a tmux session
+if [[ -n "$TMUX" ]]; then
+  autoload -U add-zsh-hook
+
+  set_tmux_window_name() {
+    local dir="${PWD:t}"
+
+    # Strip everything up to the last hyphen
+    dir="${dir##*-}"
+
+    # Capitalize the first letter natively
+    dir="${(C)dir}"
+
+    [[ -z "$dir" ]] && dir="/"
+    tmux rename-window "$dir"
+  }
+add-zsh-hook chpwd set_tmux_window_name
+set_tmux_window_name
+fi
