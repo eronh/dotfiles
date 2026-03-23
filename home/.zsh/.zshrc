@@ -1,12 +1,13 @@
 
+typeset -U PATH path FPATH fpath MANPATH manpath
+typeset -U precmd_functions preexec_functions chpwd_functions
+
 # Enable Powerlevel11k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
-typeset -U path  # Make sure PATH entries are unique
 
 # To customize prompt, run `p10k configure` or edit ~/Workbench/dotfiles/home/.p10k.zsh.
 [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
@@ -49,6 +50,35 @@ if [[ -n "$TMUX" ]]; then
     [[ -z "$dir" ]] && dir="/"
     tmux rename-window "$dir"
   }
-add-zsh-hook chpwd set_tmux_window_name
-set_tmux_window_name
+  add-zsh-hook chpwd set_tmux_window_name
+  set_tmux_window_name
 fi
+
+# sourcing the .zshrc file many times can cause performance issues
+# so there's another reload-tmux function that uses `exec zsh` instead
+reload-tmux-with-source() {
+  if [ -n "$TMUX" ]; then
+    # List all panes globally, check if the active command is zsh, and extract the pane ID
+    tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
+      # Send the source command and press Enter (C-m)
+      tmux send-keys -t "$pane" "source ~/.zshrc" C-m
+    done
+    echo "Done! Reloaded .zshrc in all active zsh panes."
+  else
+    # Fallback if you run it outside of tmux
+    source ~/.zshrc
+    echo "Reloaded .zshrc locally."
+  fi
+}
+
+reload-tmux() {
+  if [ -n "$TMUX" ]; then
+    tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
+      # Send the exec command instead of source
+      tmux send-keys -t "$pane" "exec zsh" C-m
+    done
+    echo "Done! Restarted zsh in all active panes."
+  else
+    exec zsh
+  fi
+}
