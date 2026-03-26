@@ -24,4 +24,4 @@ bindkey -M viins "^ " magic-space
 # normal space during searches
 bindkey -M isearch " " magic-space
 
-GLOBALIAS_FILTER_VALUES=('~' 'c' 'ls' 'l' 'll' 'la' '$PWD' '$HOME' 'j' 'z' 'jw' 'grep')
+GLOBALIAS_FILTER_VALUES=('~' 'c' 'ls' 'l' 'll' 'la' '$PWD' '$HOME' 'j' 'z' 'jw' 'grep' 'vim')

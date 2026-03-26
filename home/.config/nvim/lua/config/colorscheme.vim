@@ -1,2 +1,2 @@
-light=gruvbox
-dark=catppuccin-frappe
+light=solarized
+dark=nord
