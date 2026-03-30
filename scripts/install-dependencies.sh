@@ -24,6 +24,7 @@ PACKAGES_COMMON=(
     "gawk"
     "zsh"
     "vlc"
+    "lazygit"
 )
 
 PACKAGES_DNF=(
@@ -64,17 +65,28 @@ PACKAGES_APT=(
 )
 
 PACKAGES_PACMAN=(
-    "alacritty"
-    "wezterm"
-    "fd"
-    "gnupg"
     "base-devel"
-    "libyaml"
-    "jdk11-openjdk"
-    "inetutils"
+    "bitwarden"
     "bpytop"
+    "diff-so-fancy"
+    "dolphin"
+    "fd"
+    "firefox"
+    "firewalld"
+    "gnupg"
+    "inetutils"
+    "intel-ucode"
+    "jdk11-openjdk"
+    "konsole"
+    "libyaml"
     "python"
     "python-pip"
+    "sddm"
+    "solaar"
+    "tree-sitter"
+    "tree-sitter-cli"
+    "wezterm"
+    "wl-clipboard"
 )
 
 PACKAGES_ZYPPER=(
