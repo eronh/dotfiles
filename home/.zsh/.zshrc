@@ -25,11 +25,14 @@ is_installed mise && eval "$($HOME/.local/bin/mise activate zsh)"
 is_installed direnv && eval "$(direnv hook zsh)"
 is_installed yarn && path+=$(yarn global bin)
 
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=($HOME/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
-# End of Docker CLI completions
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' menu select
+zstyle ':completion:*' rehash true
+
+fpath=($HOME/.docker/completions $fpath)
 
 export PATH="/opt/homebrew/sbin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"

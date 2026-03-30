@@ -19,6 +19,10 @@ zinit light zsh-users/zsh-completions
 zinit load 'zsh-users/zsh-history-substring-search'
 zinit ice wait atload '_history_substring_search_config'
 
+# Performance-related
+zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
+zinit light zdharma-continuum/zinit-annex-bin-gem-node
+
 # OMZ plugins and utilities
 zinit snippet OMZ::lib/compfix.zsh
 zinit snippet OMZ::lib/clipboard.zsh
@@ -35,10 +39,6 @@ zinit snippet OMZ::plugins/mise/mise.plugin.zsh
 # zinit snippet OMZ::plugins/globalias/globalias.plugin.zsh # expands glob expressions, subcommands and aliases
 # my patched versions of globalias, to prevent expanding ~, l, ll, etc
 zinit light-mode for $HOME/.zsh/plugins/globalias
-
-# Performance-related
-zinit ice wait lucid atinit"zpcompinit; zpcdreplay"
-zinit light zdharma-continuum/zinit-annex-bin-gem-node
 
 zinit load agkozak/zsh-z
 ZSHZ_CMD='j'
