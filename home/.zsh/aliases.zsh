@@ -1,4 +1,5 @@
 alias c="clear && printf '\e[3J'"
+alias Vim=$(which vim)
 alias vim=$(which nvim)
 alias xablau="npm run dev:debug"
 alias xcurl="curl -o /dev/null -s -w %{time_total}"
@@ -79,3 +80,4 @@ alias c="clear && printf '\e[3J'"
 # deduplicate history
 alias histclean='nl ~/.bash_history | sort -k 2  -k 1,1nr| uniq -f 1 | sort -n | cut -f 2 > unduped_history && cp unduped_history ~/.bash_history'
 
+alias j='zshz 2>&1'

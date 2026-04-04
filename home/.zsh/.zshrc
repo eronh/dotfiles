@@ -27,6 +27,7 @@ is_installed yarn && path+=$(yarn global bin)
 
 autoload -Uz compinit
 compinit
+autoload -U colors && colors
 
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' menu select

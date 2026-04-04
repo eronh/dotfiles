@@ -36,3 +36,12 @@ setopt HIST_SAVE_NO_DUPS
 setopt INC_APPEND_HISTORY
 setopt NOMATCH
 setopt PROMPT_SUBST
+
+# From KDE
+#
+# Don't fail on non-matching globs - they may be used by a command internally.
+# This behaviour is more consistent with bash.
+setopt +o nomatch
+
+# Allow comments even in interactive shells.
+setopt interactivecomments
