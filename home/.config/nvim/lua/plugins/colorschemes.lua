@@ -63,6 +63,4 @@ return {
     { "EdenEast/nightfox.nvim" },
     { "navarasu/onedark.nvim" },
     { "sainnhe/everforest" },
-    { "folke/tokyonight.nvim", lazy = false, priority = 1000 },
-    { "rebelot/kanagawa.nvim" },
 }
