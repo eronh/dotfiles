@@ -44,13 +44,6 @@ if [[ -n "$TMUX" ]]; then
 
   set_tmux_window_name() {
     local dir="${PWD:t}"
-
-    # Strip everything up to the last hyphen
-    dir="${dir##*-}"
-
-    # Capitalize the first letter natively
-    dir="${(C)dir}"
-
     [[ -z "$dir" ]] && dir="/"
     tmux rename-window "$dir"
   }
