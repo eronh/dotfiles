@@ -15,6 +15,9 @@ local act = wezterm.action
 ---@class Config: WeztermConfig
 local config = wezterm.config_builder()
 
+config.initial_cols = 130
+config.initial_rows = 40
+
 local function get_color_scheme()
     if wezterm.gui.get_appearance():find("Dark") then
         return "Nord (Gogh)"
@@ -29,7 +32,7 @@ config.scrollback_lines = 100000
 config.color_scheme = get_color_scheme()
 -- config.font = wezterm.font("Iosevka Nerd Font Mono" --[[{,  weight = "Bold", italic = true } --]])
 config.font = wezterm.font_with_fallback({ "IosevkaTerm Nerd Font Mono", "Monaco", "monospace" })
-config.font_size = 14
+config.font_size = 12
 
 -- 🌙 Transparent background with blur
 -- config.window_background_opacity = 0.95 -- 90% opacity (adjust to your liking)
