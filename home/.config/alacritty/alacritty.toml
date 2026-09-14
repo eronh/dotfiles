@@ -1,7 +1,3 @@
-[terminal.shell]
-program = "/bin/zsh"
-args = ["--login"]
-
 [env]
 TERM = "xterm-256color"
 
@@ -21,7 +17,7 @@ style = "Regular"
 [window]
 startup_mode = "Maximized"
 option_as_alt = "Both"
-decorations = 'buttonless'
+decorations = 'Buttonless'
 dynamic_title = true
 blur = true
 opacity = 1
