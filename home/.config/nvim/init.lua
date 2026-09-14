@@ -9,4 +9,6 @@ require("config.lazy")
 require("config.keymaps")
 require("config.autocmds")
 require("config.usercmds")
-require("config.colors")
+
+vim.opt.background = "dark"
+vim.cmd('colorscheme nord')

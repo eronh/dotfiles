@@ -1,2 +1,0 @@
-light=solarized
-dark=nord
