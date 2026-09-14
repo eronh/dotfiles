@@ -5,19 +5,26 @@ typeset -U precmd_functions preexec_functions chpwd_functions
 # Enable Powerlevel11k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
-# To customize prompt, run `p10k configure` or edit ~/Workbench/dotfiles/home/.p10k.zsh.
-[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
-source $HOME/.zsh/options.zsh
-source $HOME/.zsh/functions.zsh
-source $HOME/.zsh/plugins.zsh
-source $HOME/.zsh/aliases.zsh
-source $HOME/.zsh/keybindings.zsh
-source $HOME/.zsh/exports.zsh
+source_if_exists() {
+  local file=$1
+  if [[ -f "$file" ]]; then
+    source "$file" &>/dev/null
+  fi
+}
+
+source_if_exists $HOME/.zsh/options.zsh
+source_if_exists $HOME/.zsh/functions.zsh
+source_if_exists $HOME/.zsh/plugins.zsh
+source_if_exists $HOME/.zsh/aliases.zsh
+source_if_exists $HOME/.zsh/keybindings.zsh
+source_if_exists $HOME/.zsh/exports.zsh
 
 command -v fzf >/dev/null && source <(fzf --zsh)
 

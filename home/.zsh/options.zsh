@@ -18,7 +18,7 @@ HISTSIZE=10000
 SAVEHIST=10000
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"  # Makes the suggestion text lighter.
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(builtin)  # You can customize what to highlight.
-HISTORY_IGNORE="(c l ls la ll xablau)"
+HISTORY_IGNORE="(c l ls la ll)"
 
 setopt AUTO_CD
 setopt AUTO_PUSHD

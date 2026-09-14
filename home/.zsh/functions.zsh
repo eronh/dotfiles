@@ -1,20 +1,7 @@
-source_if_exists() {
-	local file=$1
-
-	if [[ -f "$file" ]]; then
-		source "$file" &>/dev/null
-	fi
-}
-
-# True if $1 is an executable in $PATH
-# Works in both {ba,z}sh
-# is_bin_in_path
 function is_installed {
 	if [[ -n $ZSH_VERSION ]]; then
-		# echo "is installed"
 		builtin whence -p "$1" &>/dev/null
-	else # bash:
-		# echo "not installed ://"
+    else
 		builtin type -P "$1" &>/dev/null
 	fi
 }
@@ -137,3 +124,75 @@ addcmd() {
 
 	return 0
 }
+
+# sourcing the .zshrc file many times can cause performance issues
+# so there's another reload-tmux function that uses `exec zsh` instead
+reload-tmux-with-source() {
+    if [ -n "$TMUX" ]; then
+        # List all panes globally, check if the active command is zsh, and extract the pane ID
+        tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
+            # Send the source command and press Enter (C-m)
+            tmux send-keys -t "$pane" "source ~/.zshrc" C-m
+        done
+        echo "Done! Reloaded .zshrc in all active zsh panes."
+    else
+        # Fallback if you run it outside of tmux
+        source ~/.zshrc
+        echo "Reloaded .zshrc locally."
+    fi
+}
+
+reload-tmux() {
+    if [ -n "$TMUX" ]; then
+        # Match panes by the default shell's name (zsh, fish, ...), not a hardcoded one
+        tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk -v sh="${SHELL:t}" '$2==sh {print $1}' | while read -r pane; do
+            # Send the exec command instead of source
+            tmux send-keys -t "$pane" "exec $SHELL" C-m
+        done
+        echo "Done! Restarted ${SHELL:t} in all active panes."
+    else
+        exec "$SHELL"
+    fi
+}
+
+gwc() {
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: gwt <worktree-name> [branch]"
+        return 1
+    fi
+
+    local wt_name="$1"
+    local branch=""
+    if [[ $# -ge 2 ]]; then
+        branch="$2"
+    else
+        branch="$wt_name"
+    fi
+
+    local repo_root
+    repo_root=$(git rev-parse --show-toplevel) || return 1
+    local project_name
+    project_name=$(basename "$repo_root")
+
+    local wt_dir="${repo_root}/${project_name}-${wt_name}"
+
+    if [[ -d "$wt_dir" ]]; then
+        echo "Worktree already exists: $wt_dir"
+        return 1
+    fi
+
+    git worktree add -b "$branch" "$wt_dir"
+
+    echo "Created worktree: ${project_name}-${wt_name}"
+    echo "Remove with: git worktree remove ${project_name}-${wt_name}"
+}
+
+# `sb` is re-aliased on every cd to the sbx command for the current project
+# (git toplevel, else cwd), so globalias expands it in place on <space>.
+_sb_alias() {
+    local root=${$(git rev-parse --show-toplevel 2>/dev/null):-$PWD}
+    alias sb="sbx run --name ${(q-)${${root:t}//[^a-zA-Z0-9_-]/-}} claude"
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd _sb_alias
+_sb_alias

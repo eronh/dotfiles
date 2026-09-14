@@ -95,8 +95,14 @@ rsync -R $HOME/.local/bin/code /Volumes/ExternalDrive/backup/
 
 # compress-mov-videos
 ffmpeg -i "input.mov" -c:v libx264 -crf 28 -preset fast -c:a aac -b:a 128k "output.mov"
+
 # Recursively delete specific directories
 find . -type d \( -name "node_modules" -o -name "_generated" -o -name "dist" \) -prune
 
+# flush macos dns cache
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
 
 
+
+# tmux: manually trigger window renaming
+tmux list-windows -a -F '#{window_id}' | xargs -I{} tmux set -w -u -t {} automatic-rename

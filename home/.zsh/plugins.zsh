@@ -9,7 +9,7 @@ zinit light zdharma-continuum/zinit-annex-as-monitor
 zinit light zdharma-continuum/zinit-annex-patch-dl
 zinit light zdharma-continuum/zinit-annex-rust
 
-zinit ice depth=1; zinit light romkatv/powerlevel10k
+# zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 # Essential interactive plugins
 zinit light zsh-users/zsh-autosuggestions
@@ -45,3 +45,4 @@ ZSHZ_CMD='j'
 ZSHZ_TILDE=1
 ZSHZ_TRAILING_SLASH=1
 ZSHZ_KEEP_DIRS=('$HOME/Desktop/' '$HOME/Documents/' '$HOME/Downloads/' '$HOME/Workbench/')
+FZ_HISTORY_CD_CMD=zshz

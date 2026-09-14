@@ -1,11 +1,13 @@
+bindkey -e
+
 autoload -U history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 
 bindkey "^[[A" history-beginning-search-backward-end
 bindkey "^[[B" history-beginning-search-forward-end
-
-bindkey -e
+bindkey "^[OA" history-beginning-search-backward-end
+bindkey "^[OB" history-beginning-search-forward-end
 
 bindkey "^[[3~" delete-char                     # Key Del
 bindkey "^[[5~" beginning-of-buffer-or-history  # Key Page Up
@@ -19,10 +21,6 @@ WORDCHARS='*?_[]~!#$%^(){}<>'
 autoload -Uz select-word-style
 select-word-style normal
 zstyle ':zle:*' word-style unspecified
-
-# From KDE
-
-# Set keybinds to emacs mode.
 
 # Ensure Home, End, Delete and Insert keys work as users expect.
 # Home key:
@@ -49,4 +47,3 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 bindkey '\e[5~' up-line-or-beginning-search     # Page up
 bindkey '\e[6~' down-line-or-beginning-search   # Page down
-
