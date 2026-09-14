@@ -1,7 +1,7 @@
 [tools]
-go = "1.26.0"
+go = "latest"
 lua = "latest"
-node = { version = "latest", postinstall = "command -v corepack >/dev/null || npm install -g npm; npm install -g -y corepack && corepack enable pnpm" }
+node = { version = "lts", postinstall = "command -v corepack >/dev/null || npm install -g npm; npm install -g -y corepack && corepack enable pnpm" }
 python = "latest"
 rust = "latest"
 usage = "latest"
@@ -12,9 +12,7 @@ enter = "mise install --quiet"
 [settings]
 experimental = true
 jobs = 8
-# trusted_config_paths = [
-#   '~/work/my-trusted-projects',
-# ]
 
-# [shell_alias]
-# ll = "ls -la"
+[shell_alias]
+p = "pnpm"
+pz = "pnpx"
