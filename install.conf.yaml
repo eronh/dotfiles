@@ -18,6 +18,9 @@
       path: home/.zsh/.zshrc
     ~/.zshenv: home/.zsh/.zshenv
     ~/.p10k.zsh: home/.p10k.zsh
+    ~/.config/fish:
+      create: true
+      path: home/.config/fish
 
     # terminal emulators
     ~/.config/alacritty:
