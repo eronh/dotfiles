@@ -3,8 +3,6 @@ if vim.loader then
 end
 
 require("config.options")
-require("config.init")
--- require("config.session")
 require("config.lazy")
 require("config.keymaps")
 require("config.autocmds")
