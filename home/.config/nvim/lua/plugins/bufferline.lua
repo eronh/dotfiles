@@ -1,5 +1,7 @@
 return {
     "akinsho/bufferline.nvim",
+    -- Off: open buffers are listed in the sidebar above neo-tree instead (see edgy.lua).
+    enabled = false,
     event = "VeryLazy",
     keys = {
         { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle Pin" },
