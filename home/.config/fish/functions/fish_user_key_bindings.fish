@@ -1,6 +1,6 @@
 function fish_user_key_bindings
     # Clear screen and scrollback
-    bind \cl 'clear; printf "\e[3J"; commandline -f repaint'
+    bind ctrl-l 'clear; printf "\e[3J"; commandline -f repaint'
 
     # Stop at - . : , / when deleting a word backwards, like zsh's WORDCHARS.
     # fish's default ctrl-w (backward-kill-path-component) treats - and . as

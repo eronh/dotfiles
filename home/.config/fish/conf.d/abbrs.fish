@@ -1,9 +1,11 @@
+# conf.d runs for scripts too; abbreviations only matter at a prompt.
+status is-interactive; or return
+
 abbr -a .f 'exec fish'
 abbr -a // 'brew update && brew upgrade && brew cleanup'
 abbr -a xcurl 'curl -o /dev/null -s -w %{time_total}'
 abbr -a vimrc '$EDITOR $HOME/.vimrc'
 abbr -a wezrc 'nvim $HOME/.config/wezterm/wezterm.lua'
-abbr -a histclean 'nl ~/.bash_history | sort -k 2 -k 1,1nr | uniq -f 1 | sort -n | cut -f 2 > unduped_history && cp unduped_history ~/.bash_history'
 
 abbr -a -- - 'cd -'
 abbr -a --position anywhere ... ../..
@@ -14,17 +16,6 @@ abbr -a --position anywhere ...... ../../../../..
 # tmux
 abbr -a tks '~/.tmux/plugins/tmux-resurrect/scripts/save.sh && tmux kill-server'
 abbr -a tkk 'tmux detach'
-abbr -a /q 'tmux detach'
-
-# git: the full git plugin set lives in git.fish
-abbr -a g- 'git switch -'
-abbr -a gs 'git sync'
-abbr -a glr 'git pull --rebase'
-abbr -a grbo 'git rebase --onto <new> <old> <current-branch>'
-abbr -a gw 'git worktree'
-abbr -a gwa 'git worktree add'
-abbr -a gwls 'git worktree list'
-abbr -a gwrm 'git worktree remove'
 
 # docker
 set -l docker_cmd docker
@@ -52,7 +43,7 @@ abbr -a dcpull "$docker_cmd compose pull"
 abbr -a dcstart "$docker_cmd compose start"
 abbr -a dck "$docker_cmd compose kill"
 
-# Create and run docker sandboxesfor for the current project (git toplevel, else cwd).
+# Create and run docker sandboxes for the current project (git toplevel, else cwd).
 # Defined here rather than in functions/ so the abbr never outlives its helper.
 # Example: sbx run --name <dynamic project dir> claude
 function _sb_abbr

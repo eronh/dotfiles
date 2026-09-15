@@ -2,6 +2,9 @@
 # https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
 # Where the plugin picks an alias by git version, the modern form is used.
 
+# conf.d runs for scripts too; these abbreviations and helpers only matter at a prompt.
+status is-interactive; or return
+
 #
 # Functions
 # Kept here in one file rather than one-per-file in ../functions/, so they are
@@ -331,7 +334,6 @@ __git_abbr_dynamic gmum 'git merge upstream/(git_main_branch)'
 abbr -a gmtl 'git mergetool --no-prompt'
 abbr -a gmtlvim 'git mergetool --no-prompt --tool=vimdiff'
 abbr -a gl 'git pull'
-abbr -a gpr 'git pull --rebase'
 abbr -a gprv 'git pull --rebase -v'
 abbr -a gpra 'git pull --rebase --autostash'
 abbr -a gprav 'git pull --rebase --autostash -v'
@@ -357,8 +359,7 @@ abbr -a grb 'git rebase'
 abbr -a grba 'git rebase --abort'
 abbr -a grbc 'git rebase --continue'
 abbr -a grbi 'git rebase --interactive'
-# Overridden by the grbo in abbrs.fish (as in zsh, where aliases.zsh loads after the plugin)
-# abbr -a grbo 'git rebase --onto'
+abbr -a grbo 'git rebase --onto'
 abbr -a grbs 'git rebase --skip'
 __git_abbr_dynamic grbd 'git rebase (git_develop_branch)'
 __git_abbr_dynamic grbm 'git rebase (git_main_branch)'
@@ -418,12 +419,19 @@ abbr -a gtv 'git tag | sort -V'
 abbr -a gignore 'git update-index --assume-unchanged'
 abbr -a gunignore 'git update-index --no-assume-unchanged'
 abbr -a gwch 'git log --patch --abbrev-commit --pretty=medium --raw'
-abbr -a gwt 'git worktree'
-abbr -a gwta 'git worktree add'
-abbr -a gwtls 'git worktree list'
 abbr -a gwtmv 'git worktree move'
-abbr -a gwtrm 'git worktree remove'
 # The plugin's `gsta --include-untracked`; spelled out because abbrs don't chain
 abbr -a gstu 'git stash push --include-untracked'
 abbr -a gk 'command gitk --all --branches & disown'
 __git_abbr_dynamic gke 'command gitk --all (git log --walk-reflogs --pretty=%h) & disown'
+
+# Custom abbreviations, not from the plugin (moved here from abbrs.fish)
+abbr -a g- 'git switch -'
+abbr -a gs 'git sync'
+abbr -a glr 'git pull --rebase'
+# Disabled: a usage note, not a command; fish reads `<new>` as a redirection.
+# abbr -a grbo 'git rebase --onto <new> <old> <current-branch>'
+abbr -a gw 'git worktree'
+abbr -a gwa 'git worktree add'
+abbr -a gwls 'git worktree list'
+abbr -a gwrm 'git worktree remove'
