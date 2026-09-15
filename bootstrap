@@ -182,7 +182,7 @@ main() {
     fi
 
     log_success "Dotfiles installation completed successfully!"
-    log_info "Restart your shell or run 'source ~/.zshrc' to apply changes"
+    log_info "Restart your shell or run 'exec zsh' to apply changes"
 }
 
 main "$@"

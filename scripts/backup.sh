@@ -22,6 +22,8 @@ create_backup() {
         ".bash_aliases"
         ".zshrc"
         ".zsh"
+        ".zshenv"
+        ".config/zsh"
         ".vimrc"
         ".ideavimrc"
         ".gitconfig"

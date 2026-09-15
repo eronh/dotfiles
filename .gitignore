@@ -5,3 +5,6 @@
 
 bin/copyfile
 /home/.config/alacritty/themes/
+/home/.config/zsh/.zcompdump*
+/home/.config/zsh/.zsh_sessions/
+/home/.config/zsh/.zsh_history

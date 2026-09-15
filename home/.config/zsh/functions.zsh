@@ -63,7 +63,7 @@ urldecode() {
 
 # Append a command and its description to the cheat sheet (shared with fish).
 addcmd() {
-    local file="$HOME/.zsh/useful_commands.zsh"
+    local file="$ZDOTDIR/useful_commands.zsh"
 
     if [[ -z "$1" || -z "$2" ]]; then
         echo "Usage: addcmd <command> <description>"
@@ -118,12 +118,12 @@ zle -N clear_scrollback_buffer # bound to Ctrl+L in keybindings.zsh
 #         # List all panes globally, check if the active command is zsh, and extract the pane ID
 #         tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
 #             # Send the source command and press Enter (C-m)
-#             tmux send-keys -t "$pane" "source ~/.zshrc" C-m
+#             tmux send-keys -t "$pane" "source \$ZDOTDIR/.zshrc" C-m
 #         done
 #         echo "Done! Reloaded .zshrc in all active zsh panes."
 #     else
 #         # Fallback if you run it outside of tmux
-#         source ~/.zshrc
+#         source "$ZDOTDIR/.zshrc"
 #         echo "Reloaded .zshrc locally."
 #     fi
 # }

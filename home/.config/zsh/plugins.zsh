@@ -32,7 +32,7 @@ zinit snippet OMZ::plugins/extract/extract.plugin.zsh
 zinit snippet OMZ::plugins/kubectl/kubectl.plugin.zsh
 # zinit snippet OMZ::plugins/globalias/globalias.plugin.zsh # expands glob expressions, subcommands and aliases
 # my patched versions of globalias, to prevent expanding ~, l, ll, etc
-zinit light-mode for "$HOME/.zsh/plugins/globalias"
+zinit light-mode for "$ZDOTDIR/plugins/globalias"
 
 # --- directory jumping (zsh-z) ---
 # Settings must exist before the plugin loads. The `j` alias is in aliases.zsh.

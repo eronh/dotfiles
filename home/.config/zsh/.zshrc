@@ -22,12 +22,12 @@ source_if_exists() {
     [[ -f "$1" ]] && source "$1"
 }
 
-source_if_exists "$HOME/.zsh/exports.zsh"
-source_if_exists "$HOME/.zsh/options.zsh"
-source_if_exists "$HOME/.zsh/functions.zsh"
-source_if_exists "$HOME/.zsh/plugins.zsh"
-source_if_exists "$HOME/.zsh/aliases.zsh"
-source_if_exists "$HOME/.zsh/keybindings.zsh"
+source_if_exists "$ZDOTDIR/exports.zsh"
+source_if_exists "$ZDOTDIR/options.zsh"
+source_if_exists "$ZDOTDIR/functions.zsh"
+source_if_exists "$ZDOTDIR/plugins.zsh"
+source_if_exists "$ZDOTDIR/aliases.zsh"
+source_if_exists "$ZDOTDIR/keybindings.zsh"
 
 # --- tool hooks ---
 is_installed fzf && source <(fzf --zsh)
@@ -40,7 +40,9 @@ is_installed starship && eval "$(starship init zsh)"
 # Plugins and aliases.zsh call `compdef` before compinit exists; zinit queues
 # those calls and `zinit cdreplay` applies them once compinit has run.
 fpath=("$HOME/.docker/completions" $fpath)
-autoload -Uz compinit && compinit
+# The dump goes to the cache: its default location, $ZDOTDIR, is the dotfiles repo.
+mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+autoload -Uz compinit && compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 zinit cdreplay -q
 
 # After compinit: mise registers tool completions (e.g. `usage`) with

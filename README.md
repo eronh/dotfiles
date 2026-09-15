@@ -98,7 +98,7 @@ cp -r ~/.dotfiles_backup_YYYYMMDD_HHMMSS/* ~/
 ## Customization
 
 - Edit `install.conf.yaml` to modify dotbot configuration
-- Customize shell configuration in `home/.zsh/`
+- Customize shell configuration in `home/.config/zsh/`
 - Modify application configs in `home/.config/`
 
 ## Troubleshooting

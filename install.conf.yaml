@@ -10,13 +10,15 @@
     ~/.bashrc:
       path: home/.bashrc
       force: true
-    ~/.zsh:
+    # zsh always reads ~/.zshenv first; it sets ZDOTDIR, so .zshrc and the
+    # rest of the config load from ~/.config/zsh.
+    ~/.zshenv:
       force: true
-      path: home/.zsh
-    ~/.zshrc:
+      path: home/.config/zsh/.zshenv
+    ~/.config/zsh:
+      create: true
       force: true
-      path: home/.zsh/.zshrc
-    ~/.zshenv: home/.zsh/.zshenv
+      path: home/.config/zsh
     ~/.p10k.zsh: home/.p10k.zsh
     ~/.config/fish:
       create: true
