@@ -11,8 +11,25 @@ trim_trailing_whitespace = true
 [*.lua]
 indent_size = 4
 
+# shfmt: -bn -ci -sr -s, bash dialect
 [{*.{sh,zsh},bootstrap,install}]
 indent_size = 4
+indent_style = space
+shell_variant = bash
+binary_next_line = true
+switch_case_indent = true
+space_redirects = true
+simplify = true
+function_next_line = false
 
-[{*.yml,*.yaml}]
-indent_size = 2
+# Catch-all for shebang'd scripts with no extension.
+# Non-spec shfmt extension; keep identical to the block above.
+[[shell]]
+indent_size = 4
+indent_style = space
+shell_variant = bash
+binary_next_line = true
+switch_case_indent = true
+space_redirects = true
+simplify = true
+function_next_line = false
