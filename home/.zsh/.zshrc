@@ -12,77 +12,46 @@ typeset -U precmd_functions preexec_functions chpwd_functions
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
+# --- load order ---
+# Homebrew goes on PATH first: the files below check `is_installed` and
+# resolve tools (nvim, git, docker, podman) while they load.
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Errors are not silenced, so a broken config file shows up at startup.
 source_if_exists() {
-  local file=$1
-  if [[ -f "$file" ]]; then
-    source "$file" &>/dev/null
-  fi
+    [[ -f "$1" ]] && source "$1"
 }
 
-source_if_exists $HOME/.zsh/options.zsh
-source_if_exists $HOME/.zsh/functions.zsh
-source_if_exists $HOME/.zsh/plugins.zsh
-source_if_exists $HOME/.zsh/aliases.zsh
-source_if_exists $HOME/.zsh/keybindings.zsh
-source_if_exists $HOME/.zsh/exports.zsh
+source_if_exists "$HOME/.zsh/exports.zsh"
+source_if_exists "$HOME/.zsh/options.zsh"
+source_if_exists "$HOME/.zsh/functions.zsh"
+source_if_exists "$HOME/.zsh/plugins.zsh"
+source_if_exists "$HOME/.zsh/aliases.zsh"
+source_if_exists "$HOME/.zsh/keybindings.zsh"
 
-command -v fzf >/dev/null && source <(fzf --zsh)
-
-is_installed mise && eval "$($HOME/.local/bin/mise activate zsh)"
+# --- tool hooks ---
+is_installed fzf && source <(fzf --zsh)
 is_installed direnv && eval "$(direnv hook zsh)"
+is_installed starship && eval "$(starship init zsh)"
+is_installed codex && eval "$(codex completion zsh)"
 is_installed yarn && path+=$(yarn global bin)
 
-autoload -Uz compinit
-compinit
-autoload -U colors && colors
+# --- completion ---
+# Every fpath change must come before compinit, or its completions are missed.
+# Plugins and aliases.zsh call `compdef` before compinit exists; zinit queues
+# those calls and `zinit cdreplay` applies them once compinit has run.
+fpath=("$HOME/.docker/completions" $fpath)
+autoload -Uz compinit && compinit
+zinit cdreplay -q
 
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+# After compinit: mise registers tool completions (e.g. `usage`) with
+# `compdef` on activation, and runs its own compinit if compdef is missing.
+is_installed mise && eval "$(mise activate zsh)"
+
+# Match completion candidates regardless of letter casing.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' menu select
-zstyle ':completion:*' rehash true
 
-fpath=($HOME/.docker/completions $fpath)
+# Installer-added PATH lines (pnpm, antigravity, unity, lm studio) live in
+# exports.zsh now. Installers may append them here again; move them if so.
 
-export PATH="/opt/homebrew/sbin:$PATH"
-export PATH="/opt/homebrew/bin:$PATH"
-
-# Only run this if we are inside a tmux session
-if [[ -n "$TMUX" ]]; then
-  autoload -U add-zsh-hook
-
-  set_tmux_window_name() {
-    local dir="${PWD:t}"
-    [[ -z "$dir" ]] && dir="/"
-    tmux rename-window "$dir"
-  }
-  add-zsh-hook chpwd set_tmux_window_name
-  set_tmux_window_name
-fi
-
-# sourcing the .zshrc file many times can cause performance issues
-# so there's another reload-tmux function that uses `exec zsh` instead
-reload-tmux-with-source() {
-  if [ -n "$TMUX" ]; then
-    # List all panes globally, check if the active command is zsh, and extract the pane ID
-    tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
-      # Send the source command and press Enter (C-m)
-      tmux send-keys -t "$pane" "source ~/.zshrc" C-m
-    done
-    echo "Done! Reloaded .zshrc in all active zsh panes."
-  else
-    # Fallback if you run it outside of tmux
-    source ~/.zshrc
-    echo "Reloaded .zshrc locally."
-  fi
-}
-
-reload-tmux() {
-  if [ -n "$TMUX" ]; then
-    tmux list-panes -a -F "#{pane_id} #{pane_current_command}" | awk '$2=="zsh" {print $1}' | while read -r pane; do
-      # Send the exec command instead of source
-      tmux send-keys -t "$pane" "exec zsh" C-m
-    done
-    echo "Done! Restarted zsh in all active panes."
-  else
-    exec zsh
-  fi
-}
