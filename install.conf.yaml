@@ -26,6 +26,9 @@
     ~/.config/alacritty:
       create: true
       path: home/.config/alacritty
+    ~/.config/ghostty/config.ghostty:
+      create: true
+      path: home/.config/config.ghostty
     ~/.config/wezterm:
       create: true
       path: home/.config/wezterm

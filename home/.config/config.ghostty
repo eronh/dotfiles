@@ -1,0 +1,54 @@
+# Appearance
+theme = Nord
+font-family = IosevkaTerm Nerd Font Mono
+font-family = Monaco
+font-family = Monospace
+font-size = 14
+
+# Initial window size, in terminal cells
+# window-width = 130
+# window-height = 40
+window-save-state = always
+
+macos-titlebar-style = hidden
+# window-decoration = client
+
+# Word-selection boundaries
+selection-word-chars = " \t\n{}[]()\"'`~,;:│=&!%^<>"
+
+# Splits
+keybind = cmd+d=new_split:right
+keybind = cmd+e=new_split:down
+
+# Shell-style navigation and editing
+keybind = alt+left=text:\x1bb
+keybind = alt+right=text:\x1bf
+keybind = cmd+left=text:\x1bOH
+keybind = cmd+right=text:\x1bOF
+keybind = alt+backspace=text:\x17
+keybind = cmd+backspace=text:\x15
+keybind = home=text:\x01
+keybind = end=text:\x05
+
+# Clear scrollback and redraw the shell prompt
+keybind = cmd+k=clear_screen
+keybind = chain=text:\x0c
+
+# Window and scrolling
+keybind = cmd+enter=toggle_fullscreen
+keybind = cmd+up=scroll_page_up
+keybind = cmd+down=scroll_page_down
+
+# Tab navigation
+keybind = cmd+tab=next_tab
+keybind = cmd+shift+tab=previous_tab
+
+window-padding-x = 12
+window-padding-y = 0
+window-padding-balance = true
+window-padding-color = extend
+
+cursor-style = block
+shell-integration-features = no-cursor
+
+quit-after-last-window-closed = true

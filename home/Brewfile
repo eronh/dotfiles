@@ -58,6 +58,7 @@ cask "font-space-mono"
 cask "font-space-mono-nerd-font"
 cask "font-victor-mono"
 cask "font-victor-mono-nerd-font"
+cask "ghostty"
 cask "linearmouse"
 cask "docker/tap/sbx", trusted: true
 cask "vlc"
