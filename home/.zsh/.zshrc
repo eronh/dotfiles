@@ -33,8 +33,7 @@ source_if_exists "$HOME/.zsh/keybindings.zsh"
 is_installed fzf && source <(fzf --zsh)
 is_installed direnv && eval "$(direnv hook zsh)"
 is_installed starship && eval "$(starship init zsh)"
-is_installed codex && eval "$(codex completion zsh)"
-is_installed yarn && path+=$(yarn global bin)
+# is_installed codex && eval "$(codex completion zsh)"
 
 # --- completion ---
 # Every fpath change must come before compinit, or its completions are missed.
