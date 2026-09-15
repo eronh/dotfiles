@@ -1,38 +1,19 @@
----@class WeztermConfig
----@field font any
----@field font_size number
----@field color_scheme string
----@field hide_tab_bar_if_only_one_tab boolean
----@field tab_bar_at_bottom boolean
----@field use_fancy_tab_bar boolean
----@field colors table
----@field keys table
 local wezterm = require("wezterm")
 
 local features = require("./features")
 local act = wezterm.action
 
----@class Config: WeztermConfig
 local config = wezterm.config_builder()
 
 config.initial_cols = 130
 config.initial_rows = 40
 
-local function get_color_scheme()
-    if wezterm.gui.get_appearance():find("Dark") then
-        return "Nord (Gogh)"
-    else
-        return "Solarized Light (Gogh)"
-    end
-end
-
 config.automatically_reload_config = true
 config.scrollback_lines = 100000
 
-config.color_scheme = get_color_scheme()
--- config.font = wezterm.font("Iosevka Nerd Font Mono" --[[{,  weight = "Bold", italic = true } --]])
+config.color_scheme = "Nord (Gogh)"
 config.font = wezterm.font_with_fallback({ "IosevkaTerm Nerd Font Mono", "Monaco", "monospace" })
-config.font_size = 12
+config.font_size = 14
 
 -- 🌙 Transparent background with blur
 -- config.window_background_opacity = 0.95 -- 90% opacity (adjust to your liking)
@@ -42,17 +23,6 @@ config.font_size = 12
 config.tab_bar_at_bottom = true -- Moves the tab bar to the bottom
 config.use_fancy_tab_bar = true -- Enables a sleek, modern tab bar
 config.hide_tab_bar_if_only_one_tab = true
-
--- Persistent Sessions (Like Tmux)
--- Auto-save all open tabs and panes so they reopen exactly as you left them:
-config.default_prog = { "/bin/zsh", "-l" }
-wezterm.on("gui-startup", function(cmd)
-    local _, _, window = wezterm.mux.spawn_window(cmd or {})
-    window:gui_window():maximize() -- Start maximized
-end)
-
--- Auto-Launch Tmux
--- config.default_prog = { "/opt/homebrew/bin/tmux", "new-session", "-A", "-s", "main" }
 
 -- config.enable_csi_u_key_encoding = true
 
@@ -207,6 +177,8 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
         icon = "📊"
     elseif process:find("zsh") or process:find("bash") then
         icon = "💲"
+    elseif process:find("fish") then
+        icon = "🐟"
     elseif process:find("node") then
         icon = "🦖"
     end
