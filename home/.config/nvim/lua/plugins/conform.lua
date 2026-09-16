@@ -23,10 +23,11 @@ return {
                 ["*"] = { "codespell", "trim_whitespace" },
 
                 c = { "clang_format" },
+                go = { "goimports", "gofmt" },
 
                 css = { "prettierd" },
                 html = { "prettierd" },
-                javascript = { "eslint_d", "prettierd", stop_after_first = true },
+                javascript = { "oxfmt", "eslint_d", "prettierd", stop_after_first = true },
                 typescript = { "eslint_d", "prettierd", stop_after_first = true },
                 javascriptreact = { "eslint_d", "prettierd", stop_after_first = true },
                 typescriptreact = { "eslint_d", "prettierd", stop_after_first = true },
@@ -44,8 +45,11 @@ return {
                     end
                 end,
 
+                shell = { "shfmt", "shellcheck", stop_after_first = true },
+                sh = { "shfmt", "shellcheck", stop_after_first = true },
                 bash = { "shfmt", "shellcheck", stop_after_first = true },
+                zsh = { "shfmt", "shellcheck", stop_after_first = true },
             },
-        })
+        }
     end,
 }
