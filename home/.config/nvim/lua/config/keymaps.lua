@@ -25,7 +25,6 @@ keymap.set("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 keymap.set("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 
 keymap.set("x", "y", '"+y')
-keymap.set("n", "p", '"+p')
 keymap.set("n", "p", '"*p')
 
 -- Increment/decrement

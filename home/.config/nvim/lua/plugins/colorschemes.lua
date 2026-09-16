@@ -1,66 +1,39 @@
-local function select_colorscheme()
+local function persist_colorscheme(name)
+    local init = vim.fn.stdpath("config") .. "/init.lua"
+    local lines = vim.fn.readfile(init)
+
+    for i, line in ipairs(lines) do
+        if line:match("^vim%.cmd%(['\"]colorscheme ") then
+            lines[i] = string.format("vim.cmd(%q)", "colorscheme " .. name)
+            vim.fn.writefile(lines, init)
+            return
+        end
+    end
+
+    vim.notify("Could not persist colorscheme: no colorscheme command in init.lua", vim.log.levels.ERROR)
+end
+
+vim.keymap.set("n", "<leader>tt", function()
     local actions = require("telescope.actions")
     local action_state = require("telescope.actions.state")
-    local builtin = require("telescope.builtin")
 
-    builtin.colorscheme({
+    require("telescope.builtin").colorscheme({
         enable_preview = true,
         attach_mappings = function(_, map)
-            map("i", "<CR>", function(prompt_bufnr)
+            map({ "i", "n" }, "<CR>", function(prompt_bufnr)
                 local selection = action_state.get_selected_entry()
                 if selection then
-                    local colorscheme = selection.value
-
-                    -- Apply the selected colorscheme
-                    vim.cmd("colorscheme " .. colorscheme)
-
-                    -- Save the colorscheme persistently
-                    local config_path = vim.fn.stdpath("config") .. "/lua/config/colorscheme.vim"
-                    local file = io.open(config_path, "w")
-                    if file then
-                        file:write(colorscheme .. "\n") -- Store just the name
-                        file:close()
-                    end
-
-                    -- Automatically source colors.lua to apply the theme
-                    vim.cmd("source " .. vim.fn.stdpath("config") .. "/lua/config/colors.lua")
-
-                    -- Debug: Confirm colorscheme application
-                    print("Colorscheme applied and saved: " .. colorscheme)
+                    vim.cmd.colorscheme(selection.value)
+                    persist_colorscheme(selection.value)
                 end
                 actions.close(prompt_bufnr)
             end)
             return true
         end,
     })
-end
-
-vim.keymap.set("n", "<leader>tt", select_colorscheme)
+end, { desc = "Pick colorscheme" })
 
 return {
-    {
-        "ellisonleao/gruvbox.nvim",
-        name = "gruvbox",
-        opts = {
-            contrast = "soft",
-        },
-    },
-    { "catppuccin/nvim", name = "catppuccin" },
     { "shaunsingh/nord.nvim", name = "nord" },
-    { "rose-pine/neovim", name = "rose-pine" },
-    { "folke/tokyonight.nvim", name = "tokyonight" },
-    { "rebelot/kanagawa.nvim", name = "kanagawa" },
-    { "Mofiqul/dracula.nvim", name = "dracula" },
-    {
-        "maxmx03/solarized.nvim",
-        name = "solarized",
-        opts = {
-            variant = "winter", -- "spring" | "summer" | "autumn" | "winter"
-            palette = "solarized", -- "solarized" | "selenized"
-            transparent = { enabled = false },
-        },
-    },
-    { "EdenEast/nightfox.nvim" },
-    { "navarasu/onedark.nvim" },
-    { "sainnhe/everforest" },
+    { "ellisonleao/gruvbox.nvim", name = "gruvbox", opts = { contrast = "soft" } },
 }
