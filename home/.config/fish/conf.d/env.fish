@@ -1,11 +1,20 @@
 # Homebrew first. Its shellenv runs `fish_add_path --move`, which pulls
-# /opt/homebrew/bin to the front of PATH, so running it after the lines below
-# silently put Homebrew ahead of them.
-if test -x /opt/homebrew/bin/brew
-    /opt/homebrew/bin/brew shellenv fish | source
+# the brew prefix to the front of PATH, so running it after the lines below
+# would silently put Homebrew ahead of them.
+for brew in /opt/homebrew/bin/brew /usr/local/bin/brew
+    if test -x $brew
+        $brew shellenv fish | source
+        break
+    end
 end
 
-set -gx PNPM_HOME $HOME/Library/pnpm
+if test (uname -s) = Darwin
+    set -gx PNPM_HOME $HOME/Library/pnpm
+else
+    set -l data $XDG_DATA_HOME
+    test -n "$data"; or set data $HOME/.local/share
+    set -gx PNPM_HOME $data/pnpm
+end
 
 # User dirs go after Homebrew and the system, matching the zsh PATH order.
 # fish_add_path skips dirs that don't exist; --path avoids writing universal vars

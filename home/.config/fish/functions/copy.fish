@@ -1,4 +1,5 @@
 function copy
+    set -l cmd
     if test (uname -s) = Darwin
         set cmd pbcopy
     else if test "$XDG_SESSION_TYPE" = wayland

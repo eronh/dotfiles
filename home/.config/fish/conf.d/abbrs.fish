@@ -2,7 +2,6 @@
 status is-interactive; or return
 
 abbr -a .f 'exec fish'
-abbr -a // 'brew update && brew upgrade && brew cleanup'
 abbr -a xcurl 'curl -o /dev/null -s -w %{time_total}'
 abbr -a vimrc '$EDITOR $HOME/.vimrc'
 abbr -a wezrc 'nvim $HOME/.config/wezterm/wezterm.lua'
@@ -43,11 +42,26 @@ abbr -a dcpull "$docker_cmd compose pull"
 abbr -a dcstart "$docker_cmd compose start"
 abbr -a dck "$docker_cmd compose kill"
 
+# Full package manager update.
+if test (uname -s) = Darwin
+    abbr -a // 'brew update && brew upgrade && brew cleanup'
+else if command -q apt
+    abbr -a // 'sudo apt update && sudo apt full-upgrade && sudo apt autoremove'
+else if command -q dnf
+    abbr -a // 'sudo dnf upgrade --refresh && sudo dnf autoremove'
+else if command -q zypper
+    abbr -a // 'sudo zypper refresh && sudo zypper update'
+else if command -q pacman
+    abbr -a // 'sudo pacman -Syu'
+else if command -q brew
+    abbr -a // 'brew update && brew upgrade && brew cleanup'
+end
+
 # Docker sandboxes, named after the current project (git toplevel, else cwd).
 # Defined here rather than in functions/ so the abbrs never outlive their helpers.
 function _sb_name
     set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
-    string replace -ra '[^a-zA-Z0-9_-]' '-' (basename $root)
+    string replace -ra '[^a-zA-Z0-9_-]' - (basename $root)
 end
 # Example: sbx run --name <dynamic project dir> claude
 function _sb_abbr
