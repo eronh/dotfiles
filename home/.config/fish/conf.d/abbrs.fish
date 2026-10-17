@@ -43,11 +43,22 @@ abbr -a dcpull "$docker_cmd compose pull"
 abbr -a dcstart "$docker_cmd compose start"
 abbr -a dck "$docker_cmd compose kill"
 
-# Create and run docker sandboxes for the current project (git toplevel, else cwd).
-# Defined here rather than in functions/ so the abbr never outlives its helper.
+# Docker sandboxes, named after the current project (git toplevel, else cwd).
+# Defined here rather than in functions/ so the abbrs never outlive their helpers.
+function _sb_name
+    set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
+    string replace -ra '[^a-zA-Z0-9_-]' '-' (basename $root)
+end
 # Example: sbx run --name <dynamic project dir> claude
 function _sb_abbr
-    set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
-    echo "sbx run --name "(string replace -ra '[^a-zA-Z0-9_-]' '-' (basename $root))" claude"
+    echo "sbx run --name "(_sb_name)" claude"
+end
+# Run a command in the existing sandbox, e.g. `sbe claude update`
+# Example: sbx exec <dynamic project dir> claude update
+function _sbe_abbr
+    echo "sbx exec "(_sb_name)
 end
 abbr -a sb --function _sb_abbr
+abbr -a sbe --function _sbe_abbr
+# Update claude in every sandbox; `sbx exec` starts stopped ones first
+abbr -a sbua 'for s in (sbx ls -q); echo "== $s"; sbx exec $s claude update; end'
