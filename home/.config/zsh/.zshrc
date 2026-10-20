@@ -15,7 +15,11 @@ typeset -U precmd_functions preexec_functions chpwd_functions
 # --- load order ---
 # Homebrew goes on PATH first: the files below check `is_installed` and
 # resolve tools (nvim, git, docker, podman) while they load.
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+# Apple Silicon, Intel mac.
+for brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x $brew ]] && { eval "$($brew shellenv)"; break; }
+done
+unset brew
 
 # Errors are not silenced, so a broken config file shows up at startup.
 source_if_exists() {

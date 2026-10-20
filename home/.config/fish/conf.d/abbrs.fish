@@ -53,8 +53,6 @@ else if command -q zypper
     abbr -a // 'sudo zypper refresh && sudo zypper update'
 else if command -q pacman
     abbr -a // 'sudo pacman -Syu'
-else if command -q brew
-    abbr -a // 'brew update && brew upgrade && brew cleanup'
 end
 
 # Docker sandboxes, named after the current project (git toplevel, else cwd).

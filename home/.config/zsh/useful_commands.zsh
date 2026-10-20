@@ -5,13 +5,13 @@ ls -lAh | grep -v '^d'
 ls -lAh | grep '^d'
 
 # Download Best MP4 (Video+Audio) for MacOS / WhatsApp
-/opt/homebrew/bin/yt-dlp -f "bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[ext=mp4]" \
+yt-dlp -f "bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[ext=mp4]" \
     --merge-output-format mp4 \
     -o "%(title).50s.%(ext)s" \
     "VIDEO_URL"
 
 # Download Audio Only
-/opt/homebrew/bin/yt-dlp -f "bestaudio" -x --audio-format mp3 \
+yt-dlp -f "bestaudio" -x --audio-format mp3 \
     -o "%(title).50s.%(ext)s" \
     "VIDEO_URL"
 

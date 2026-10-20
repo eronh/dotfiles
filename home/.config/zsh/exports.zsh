@@ -15,11 +15,16 @@ fi
 # --- PATH ---
 # `typeset -U path` in .zshrc drops duplicates, so no guards are needed here.
 # Entries before $path take precedence over Homebrew and the system.
-export PNPM_HOME="$HOME/Library/pnpm"
+# pnpm's default global dir differs per OS.
+if [[ $OSTYPE == darwin* ]]; then
+    export PNPM_HOME="$HOME/Library/pnpm"
+else
+    export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 path=(
     $path
     "$HOME/.local/bin" # also used by the Antigravity CLI installer
     "$PNPM_HOME/bin"
-    "/opt/homebrew/opt/libpq/bin"
+    "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/libpq/bin"
     "$HOME/.docker/bin"
 )

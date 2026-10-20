@@ -57,7 +57,9 @@
   ; ticket = !git branch --show-current | cut -d'-' -f1,2 | pbcopy			      # this adds a line break at the end \n
   ; ticket = !git branch --show-current | cut -d'-' -f1,2 | tr -d '\n' | pbcopy		      # no line break
   ; ticket = !git branch --show-current | grep -oE '[a-zA-Z]+-[0-9]+' | tr -d '\n' | pbcopy
-  ticket = !git branch --show-current | grep -oE '[a-zA-Z]+-[0-9]+' | tr '[:lower:]' '[:upper:]' | tr -d '\n' | pbcopy
+  ; ticket = !git branch --show-current | grep -oE '[a-zA-Z]+-[0-9]+' | tr '[:lower:]' '[:upper:]' | tr -d '\n' | pbcopy
+  # Clipboard tool picked like the shells' `copy` function: macOS, Wayland, else X11.
+  ticket = "!git branch --show-current | grep -oE '[a-zA-Z]+-[0-9]+' | tr '[:lower:]' '[:upper:]' | tr -d '\\n' | if [ \"$(uname -s)\" = Darwin ]; then pbcopy; elif [ \"$XDG_SESSION_TYPE\" = wayland ]; then wl-copy; else xclip -selection clipboard; fi"
 
   contributors = shortlog -sne
   # contributors from interval

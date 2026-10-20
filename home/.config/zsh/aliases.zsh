@@ -4,7 +4,19 @@ alias vi="vim"
 alias vim="nvim"
 alias xcurl="curl -o /dev/null -s -w %{time_total}"
 alias jw="cd $HOME/Workbench/"
-alias //="brew update && brew upgrade && brew cleanup"
+
+# Full package manager update. Same as abbrs.fish.
+if [[ $OSTYPE == darwin* ]]; then
+    alias //="brew update && brew upgrade && brew cleanup"
+elif is_installed apt; then
+    alias //="sudo apt update && sudo apt full-upgrade && sudo apt autoremove"
+elif is_installed dnf; then
+    alias //="sudo dnf upgrade --refresh && sudo dnf autoremove"
+elif is_installed zypper; then
+    alias //="sudo zypper refresh && sudo zypper update"
+elif is_installed pacman; then
+    alias //="sudo pacman -Syu"
+fi
 
 # --- tmux ---
 alias tks="$HOME/.tmux/plugins/tmux-resurrect/scripts/save.sh && tmux kill-server"

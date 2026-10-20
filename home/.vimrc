@@ -88,9 +88,12 @@ nnoremap - <C-x>
 " select all text
 nnoremap <C-A> ggVG
 
-xnoremap "+y y:call system("wl-copy", @")<cr>
-nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
-nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
+" Wayland only: elsewhere (macOS) these overrode vim's own "+y/"+p with a missing tool.
+if executable('wl-copy')
+  xnoremap "+y y:call system("wl-copy", @")<cr>
+  nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
+  nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p
+endif
 
 " Get current direcory in command mode
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
