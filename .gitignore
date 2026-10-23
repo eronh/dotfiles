@@ -1,6 +1,5 @@
 .DS_Store
 .idea
-.config/alacritty/themes
 .nvim
 
 bin/copyfile

@@ -29,21 +29,17 @@
     # vim
     ~/.vimrc: home/.vimrc
     ~/.ideavimrc: home/.ideavimrc
+    # deleted ~/.config/nvim? re-run ./install to relink it
     ~/.config/nvim: home/.config/nvim
 
     # scripts
     ~/.local/bin/yt-wpp: home/.local/bin/yt-wpp.sh
 
-    # in case of deleting ~/.config/nvim, use this to relink:
-    # mv ~/.config/nvim .config/
-    # ln -s ~/Workbench/dotfiles/.config/nvim ~/.config/nvim
-    # ls -l ~/.config | grep nvim # check if it was succesfully linked
-
     ~/.config/mise: home/.config/mise
     ~/.gitconfig: home/.gitconfig
     ~/.config/git/hooks: home/.config/git/hooks
     ~/.inputrc:
-      path: .inputrc
+      path: home/.inputrc
       force: true
     ~/.tmux.conf: home/.tmux.conf
     ~/.Brewfile: home/Brewfile
@@ -54,28 +50,11 @@
     - ~/.vim/undodir
 
 - shell:
-    - description: "Install mise"
+    - description: "Install mise and its tools"
       command: |
-        if ! command -v mise >/dev/null 2>&1; then
-          echo "Installing mise..."
-
-          curl https://mise.run | sh
-
-          # Add mise to PATH for current session
-          export PATH="$HOME/.local/bin:$PATH"
-
-          # Verify installation
-          if command -v mise >/dev/null 2>&1; then
-            echo "mise installed successfully"
-            echo "Installing mise tools..."
-
-            mise install
-          else
-            echo "mise installation may have failed, but anyways..."
-          fi
-        else
-          echo "mise is already installed, skipping..."
-        fi
+        export PATH="$HOME/.local/bin:$PATH"
+        command -v mise >/dev/null 2>&1 || curl -fsSL https://mise.run | sh
+        mise install
 
     - description: "Compile copyfile.swift"
       command: |
@@ -85,7 +64,7 @@
 
     - description: install vim plug
       command: |
-        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        [ -f ~/.vim/autoload/plug.vim ] || curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     - description: "Install fonts"
       command: "bash ./scripts/install-fonts.sh"
@@ -97,8 +76,7 @@
         if [ ! -d "$THEMES_DIR" ] ; then
           git clone "$REPO_URL" "$THEMES_DIR"
         else
-          cd "$THEMES_DIR"
-          git pull "$REPO_URL"
+          git -C "$THEMES_DIR" pull
         fi
 
     - description: "Configure PM2 logrotate"
