@@ -14,19 +14,22 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- NOTE: everything below has to be in ONE table. `lazy.setup(spec, opts)` uses
+-- the first argument as the whole config as soon as it contains a `spec` key,
+-- and silently drops the second — so when these were split across two tables,
+-- `defaults`, `checker` and `change_detection` were all being ignored.
 require("lazy").setup({
     spec = {
         { import = "plugins" },
     },
-}, {
     defaults = {
-        -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
-        -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
+        -- Set this to `true` to have every plugin lazy-load by default.
         lazy = false,
-        -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-        -- have outdated releases, which may break your Neovim install.
-        -- version = false, -- always use the latest git commit
-        version = "*", -- try installing the latest stable version for plugins that support semver
+        -- Left at false on purpose: plenty of plugins have outdated release
+        -- tags, and this now actually takes effect. Plugins that do want a
+        -- stable tag pin it themselves (blink.cmp, mini.nvim, opencode.nvim).
+        version = false, -- always use the latest git commit
+        -- version = "*", -- latest stable release for plugins that support semver
     },
     checker = { -- automatically check for plugin updates,
         enabled = true,
@@ -35,5 +38,11 @@ require("lazy").setup({
     change_detection = { -- automatically check for config file changes and reload the ui
         enabled = false,
         notify = false,
+    },
+    performance = {
+        rtp = {
+            -- Built-in plugins this config doesn't use.
+            disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
+        },
     },
 })
