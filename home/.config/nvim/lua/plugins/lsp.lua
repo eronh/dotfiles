@@ -19,7 +19,12 @@ local servers = {
         },
     },
 
-    pyright = {},
+    pyright = {
+        -- ruff sorts imports; one "Organize Imports" code action is enough.
+        settings = { pyright = { disableOrganizeImports = true } },
+    },
+    -- Python linting and quick fixes; pyright keeps types, hover and completion.
+    ruff = {},
     clangd = {},
     taplo = {},
 

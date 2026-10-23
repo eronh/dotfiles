@@ -48,7 +48,8 @@ return {
 
                 python = function(bufnr)
                     if require("conform").get_formatter_info("ruff_format", bufnr).available then
-                        return { "ruff_format" }
+                        -- ruff_organize_imports is ruff's isort, matching the fallback.
+                        return { "ruff_organize_imports", "ruff_format" }
                     else
                         return { "isort", "black" }
                     end
