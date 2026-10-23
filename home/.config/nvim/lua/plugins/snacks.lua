@@ -24,9 +24,12 @@ return {
             scope = { enabled = false },
             chunk = { enabled = false },
         },
-        -- input = { enabled = false },
+        input = { enabled = true }, -- used by opencode's ask()
         notifier = { enabled = true, top_down = false },
-        -- picker = { enabled = false },
+        -- Off: Telescope is the picker here. Leaving this on means two plugins
+        -- both replace vim.ui.select (telescope-ui-select is the one we want).
+        -- opencode.lua adds picker opts that stay inert while this is false.
+        picker = { enabled = false },
         quickfile = { enabled = true },
         scope = { enabled = true },
         image = { enabled = false },
@@ -48,9 +51,10 @@ return {
         dashboard = {
             enabled = false,
             preset = {
+                -- LazyVim is not installed; use snacks' own picker shim so this
+                -- still works if `enabled` is flipped back to true.
                 pick = function(cmd, opts)
-                    require("lazyvim.util").pick(cmd, opts)()
-                    -- return LazyVim.pick(cmd, opts)()
+                    return Snacks.dashboard.pick(cmd, opts)
                 end,
                 header = [[
        _______   ________  ________  ________  ________
