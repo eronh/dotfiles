@@ -33,6 +33,7 @@ return {
                 "regex",
                 "sql",
                 "toml",
+                "tsx", -- typescriptreact; `typescript` doesn't cover it
                 "typescript",
                 "vim",
                 "vimdoc",
