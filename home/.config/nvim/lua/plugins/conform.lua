@@ -16,6 +16,12 @@ return {
         },
     },
     opts = function()
+        -- First one that's actually installed wins.
+        local js = { "oxfmt", "prettierd", "prettier", "eslint_d", stop_after_first = true }
+        -- shellcheck is a linter, not a conform formatter, and "shell" is not a
+        -- filetype — both were silently ignored. shfmt handles all three.
+        local sh = { "shfmt" }
+
         return {
             notify_on_error = false,
             format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
@@ -25,17 +31,20 @@ return {
                 c = { "clang_format" },
                 go = { "goimports", "gofmt" },
 
-                css = { "prettierd" },
-                html = { "prettierd" },
-                javascript = { "oxfmt", "eslint_d", "prettierd", stop_after_first = true },
-                typescript = { "eslint_d", "prettierd", stop_after_first = true },
-                javascriptreact = { "eslint_d", "prettierd", stop_after_first = true },
-                typescriptreact = { "eslint_d", "prettierd", stop_after_first = true },
-                json = { "eslint_d", "prettierd", stop_after_first = true },
+                css = { "prettierd", "prettier", stop_after_first = true },
+                html = { "prettierd", "prettier", stop_after_first = true },
+                json = { "prettierd", "prettier", stop_after_first = true },
+
+                -- Same chain for the whole JS/TS family; `javascript` used to be
+                -- the only one that tried oxfmt.
+                javascript = js,
+                typescript = js,
+                javascriptreact = js,
+                typescriptreact = js,
 
                 lua = { "stylua" },
 
-                markdown = { "prettierd", "prettier" },
+                markdown = { "prettierd", "prettier", stop_after_first = true },
 
                 python = function(bufnr)
                     if require("conform").get_formatter_info("ruff_format", bufnr).available then
@@ -45,10 +54,9 @@ return {
                     end
                 end,
 
-                shell = { "shfmt", "shellcheck", stop_after_first = true },
-                sh = { "shfmt", "shellcheck", stop_after_first = true },
-                bash = { "shfmt", "shellcheck", stop_after_first = true },
-                zsh = { "shfmt", "shellcheck", stop_after_first = true },
+                sh = sh,
+                bash = sh,
+                zsh = sh,
             },
         }
     end,
