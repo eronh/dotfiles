@@ -66,6 +66,21 @@ local servers = {
     oxlint = {},
 }
 
+-- TypeScript 7 replaced tsserver, which ts_ls wraps, with a native `tsc --lsp`.
+-- Each buffer gets the server matching the project's own TypeScript: 7's defaults
+-- (strict, no automatic @types) flood a TS <= 6 project with errors its own tsc
+-- doesn't report. Returns the dir whose node_modules holds TypeScript >= 7.
+local function ts7_root(bufnr)
+    for dir in vim.fs.parents(vim.api.nvim_buf_get_name(bufnr)) do
+        local pkg = io.open(dir .. "/node_modules/typescript/package.json")
+        if pkg then
+            local version = vim.json.decode(pkg:read("*a")).version
+            pkg:close()
+            return tonumber(version:match("^%d+")) >= 7 and dir or nil
+        end
+    end
+end
+
 -- Tools that are not language servers (formatters, linters) still need Mason to
 -- fetch them for conform.nvim.
 local tools = {
@@ -182,6 +197,25 @@ return {
             gate_root("oxlint", function(_, root)
                 return root ~= nil
             end)
+
+            -- TS 7 projects get the native server from their own node_modules
+            -- (never a global tsc); everything else keeps ts_ls. See ts7_root().
+            gate_root("ts_ls", function(bufnr)
+                return not ts7_root(bufnr)
+            end)
+            vim.lsp.config("tsc", {
+                cmd = function(dispatchers, config)
+                    local tsc = config.root_dir .. "/node_modules/.bin/tsc"
+                    return vim.lsp.rpc.start({ tsc, "--lsp", "--stdio" }, dispatchers)
+                end,
+                root_dir = function(bufnr, on_dir)
+                    local root = ts7_root(bufnr)
+                    if root then
+                        on_dir(root)
+                    end
+                end,
+            })
+            vim.lsp.enable("tsc")
 
             require("mason-lspconfig").setup({
                 ensure_installed = vim.tbl_keys(servers),
