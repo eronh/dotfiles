@@ -60,6 +60,10 @@ local servers = {
             on_dir(found and vim.fs.dirname(found) or vim.fn.expand("~/Workbench"))
         end,
     },
+
+    -- Uses the project's node_modules/.bin/oxlint; root_dir is wrapped in
+    -- config() below so it only attaches where the project configures oxlint.
+    oxlint = {},
 }
 
 -- Tools that are not language servers (formatters, linters) still need Mason to
@@ -157,6 +161,27 @@ return {
             for name, config in pairs(servers) do
                 vim.lsp.config(name, config)
             end
+
+            -- Wraps lspconfig's root_dir for `name`: attach only where keep(bufnr, root).
+            local function gate_root(name, keep)
+                local default_root = vim.lsp.config[name].root_dir
+                vim.lsp.config(name, {
+                    root_dir = function(bufnr, on_dir)
+                        default_root(bufnr, function(root)
+                            if keep(bufnr, root) then
+                                on_dir(root)
+                            end
+                        end)
+                    end,
+                })
+            end
+
+            -- lspconfig's oxlint calls on_dir(nil) when it finds no oxlint config,
+            -- which starts it rootless in every JS/TS buffer. Keep its detection
+            -- (config files, oxlint in package.json) but drop the nil case.
+            gate_root("oxlint", function(_, root)
+                return root ~= nil
+            end)
 
             require("mason-lspconfig").setup({
                 ensure_installed = vim.tbl_keys(servers),
