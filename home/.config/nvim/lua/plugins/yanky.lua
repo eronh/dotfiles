@@ -4,7 +4,16 @@ return {
     event = { "BufReadPost", "BufWritePost", "BufNewFile" },
     opts = {
         highlight = { timer = 150 },
+        -- Leaves the cursor where it was after a yank, which is what the old
+        -- `v y -> ygv<Esc>` mapping in config/keymaps.lua was for.
+        preserve_cursor_position = { enabled = true },
     },
+    config = function(_, opts)
+        require("yanky").setup(opts)
+        -- <leader>yp below reaches into this extension, which telescope only
+        -- exposes once it has been loaded.
+        pcall(require("telescope").load_extension, "yank_history")
+    end,
     keys = {
         {
             "<leader>yp",

@@ -29,8 +29,13 @@ keymap.set("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 keymap.set("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 keymap.set("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 
-keymap.set("x", "y", '"+y')
-keymap.set("n", "p", '"*p')
+-- Off: yanky.nvim owns y/p/P and the paste ring. These redirected to the
+-- system clipboard, which 'clipboard=unnamedplus' already does, and because
+-- this file loads last they silently disabled yanky's mappings.
+-- keymap.set("x", "y", '"+y')
+-- keymap.set("n", "p", '"*p')
+-- Yanky's `preserve_cursor_position` covers what this was for.
+-- keymap.set("v", "y", "ygv<Esc>")
 
 -- Increment/decrement
 keymap.set("n", "+", "<C-a>")
@@ -92,9 +97,6 @@ keymap.set({ "n", "i", "v" }, "<esc>", "<esc><esc>", { silent = true })
 -- C-p and C-n should go to previous and next cursor positions, having the same behavior as C-o and C-i, respectively
 keymap.set("n", "<C-p>", "<C-o>", { silent = true })
 keymap.set("n", "<C-n>", "<C-i>", { silent = true })
-
--- Keep cursor at the bottom of the visual selection after you yank it.
-keymap.set("v", "y", "ygv<Esc>")
 
 -- Double slashes // should search for the currently selected string
 keymap.set("v", "//", 'y/\\V<C-R>"<CR>', { noremap = true, silent = false })
