@@ -30,31 +30,39 @@ return {
         },
     },
     config = function()
+        -- opencode.nvim no longer embeds a terminal (`toggle()` is gone): it
+        -- attaches to any running `opencode --port`, and calls `server.start`
+        -- when there is none. Both start it in the same snacks split.
+        local opencode_cmd = "opencode --port"
+        ---@type snacks.terminal.Opts
+        local terminal_opts = { win = { position = "right", enter = false } }
+
         ---@type opencode.Opts
         vim.g.opencode_opts = {
-            -- Reload buffers when opencode edits files on disk. The autocmd in
-            -- config/autocmds.lua runs :checktime on focus/idle, which is what
-            -- makes 'autoread' actually fire.
-            events = { reload = true },
+            -- Off: `events.reload` is a table now and on by default; `true` made
+            -- the config module fail to load (it indexes `.reload.enabled`).
+            -- events = { reload = true },
+            server = {
+                start = function()
+                    require("snacks.terminal").open(opencode_cmd, terminal_opts)
+                end,
+            },
         }
 
         -- Required for `opts.events.reload`.
         vim.o.autoread = true
 
-        local opencode = function(fn, ...)
-            local args = { ... }
-            return function()
-                return require("opencode")[fn](unpack(args))
-            end
-        end
-
         -- <leader>o… instead of the upstream <C-a>/<C-x> example keymaps, which
         -- shadow the built-in increment/decrement that `+`/`-` map to.
         vim.keymap.set({ "n", "x" }, "<leader>oa", function()
-            require("opencode").ask("@this: ", { submit = true })
+            require("opencode").ask("@this: ")
         end, { desc = "Ask opencode…" })
-        vim.keymap.set({ "n", "x" }, "<leader>os", opencode("select"), { desc = "Execute opencode action…" })
-        vim.keymap.set({ "n", "t" }, "<C-.>", opencode("toggle"), { desc = "Toggle opencode" })
+        vim.keymap.set({ "n", "x" }, "<leader>os", function()
+            require("opencode").select()
+        end, { desc = "Execute opencode action…" })
+        vim.keymap.set({ "n", "t" }, "<C-.>", function()
+            require("snacks.terminal").toggle(opencode_cmd, terminal_opts)
+        end, { desc = "Toggle opencode" })
 
         vim.keymap.set({ "n", "x" }, "go", function()
             return require("opencode").operator("@this ")
