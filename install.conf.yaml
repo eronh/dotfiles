@@ -2,22 +2,17 @@
     link:
       create: true
       relink: true
+      backup: true
 
 - clean: ["~"]
 
 - link:
     # shell
-    ~/.bashrc:
-      path: home/.bashrc
-      force: true
+    ~/.bashrc: home/.bashrc
     # zsh always reads ~/.zshenv first; it sets ZDOTDIR, so .zshrc and the
     # rest of the config load from ~/.config/zsh.
-    ~/.zshenv:
-      force: true
-      path: home/.config/zsh/.zshenv
-    ~/.config/zsh:
-      force: true
-      path: home/.config/zsh
+    ~/.zshenv: home/.config/zsh/.zshenv
+    ~/.config/zsh: home/.config/zsh
     ~/.p10k.zsh: home/.p10k.zsh
     ~/.config/fish: home/.config/fish
 
@@ -38,9 +33,7 @@
     ~/.config/mise: home/.config/mise
     ~/.gitconfig: home/.gitconfig
     ~/.config/git/hooks: home/.config/git/hooks
-    ~/.inputrc:
-      path: home/.inputrc
-      force: true
+    ~/.inputrc: home/.inputrc
     ~/.tmux.conf: home/.tmux.conf
     ~/.Brewfile: home/Brewfile
 
