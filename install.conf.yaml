@@ -43,7 +43,6 @@
       force: true
     ~/.tmux.conf: home/.tmux.conf
     ~/.Brewfile: home/Brewfile
-    ~/.finicky.ts: home/finicky.ts
 
 - create:
     - ~/Workbench
