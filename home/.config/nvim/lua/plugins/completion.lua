@@ -1,5 +1,11 @@
 return {
     "hrsh7th/nvim-cmp",
+    -- Off: replaced by blink.cmp (see blink.lua). Both were loading at once and
+    -- rendering competing completion menus, and lsp.lua was only advertising
+    -- nvim-cmp's capabilities, so blink's LSP source was never wired up.
+    -- Kept here as a fallback; disabling this also drops LuaSnip, cmp_luasnip,
+    -- cmp-path and cmp-nvim-lsp, which nothing else uses.
+    enabled = false,
     event = "InsertEnter",
     dependencies = {
         -- Snippet Engine & its associated nvim-cmp source
