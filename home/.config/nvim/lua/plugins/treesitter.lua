@@ -82,6 +82,11 @@ return {
             }
             for key, cfg in pairs(moves) do
                 vim.keymap.set("n", key, function()
+                    -- In a diff ]c/[c stay "next/prev change": that's how edits
+                    -- proposed by opencode and Claude Code get reviewed.
+                    if vim.wo.diff and (key == "]c" or key == "[c") then
+                        return vim.cmd.normal({ vim.v.count1 .. key, bang = true })
+                    end
                     move[cfg[1]](cfg[2], "textobjects")
                 end, { desc = cfg[2] })
             end
