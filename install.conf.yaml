@@ -16,31 +16,20 @@
       force: true
       path: home/.config/zsh/.zshenv
     ~/.config/zsh:
-      create: true
       force: true
       path: home/.config/zsh
     ~/.p10k.zsh: home/.p10k.zsh
-    ~/.config/fish:
-      create: true
-      path: home/.config/fish
+    ~/.config/fish: home/.config/fish
 
     # terminal emulators
-    ~/.config/alacritty:
-      create: true
-      path: home/.config/alacritty
-    ~/.config/ghostty/config.ghostty:
-      create: true
-      path: home/.config/config.ghostty
-    ~/.config/wezterm:
-      create: true
-      path: home/.config/wezterm
+    ~/.config/alacritty: home/.config/alacritty
+    ~/.config/ghostty/config.ghostty: home/.config/config.ghostty
+    ~/.config/wezterm: home/.config/wezterm
 
     # vim
     ~/.vimrc: home/.vimrc
     ~/.ideavimrc: home/.ideavimrc
-    ~/.config/nvim:
-      create: true
-      path: home/.config/nvim
+    ~/.config/nvim: home/.config/nvim
 
     # scripts
     ~/.local/bin/yt-wpp: home/.local/bin/yt-wpp.sh
@@ -50,11 +39,9 @@
     # ln -s ~/Workbench/dotfiles/.config/nvim ~/.config/nvim
     # ls -l ~/.config | grep nvim # check if it was succesfully linked
 
-    ~/.config/mise:
-      create: true
-      path: home/.config/mise
+    ~/.config/mise: home/.config/mise
     ~/.gitconfig: home/.gitconfig
-    ~/.git/hooks/prevent-force-push: home/.config/git/hooks/prevent-force-push
+    ~/.config/git/hooks: home/.config/git/hooks
     ~/.inputrc:
       path: .inputrc
       force: true
@@ -67,8 +54,6 @@
     - ~/.vim/undodir
 
 - shell:
-    - [git submodule update --init --recursive, Installing submodules]
-
     - description: "Install mise"
       command: |
         if ! command -v mise >/dev/null 2>&1; then
@@ -103,7 +88,7 @@
         curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     - description: "Install fonts"
-      command: "sh ./scripts/install-fonts.sh"
+      command: "bash ./scripts/install-fonts.sh"
 
     - description: "Install alacritty themes"
       command: |
@@ -117,4 +102,4 @@
         fi
 
     - description: "Configure PM2 logrotate"
-      command: "sh ./scripts/pm2-logrotate.sh"
+      command: "bash ./scripts/pm2-logrotate.sh"

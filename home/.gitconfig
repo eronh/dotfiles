@@ -17,7 +17,7 @@
   autocrlf = input
   fileMode = false
   pager = diff-so-fancy | less --tabs=4 -RFX
-  hooksPath = $HOME/.config/git/hooks
+  hooksPath = ~/.config/git/hooks
 
 [diff]
   tool = vimdiff
