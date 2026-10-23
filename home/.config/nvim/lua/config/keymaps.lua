@@ -1,5 +1,8 @@
 local keymap = vim.keymap
 
+-- NOTE: this file is required *after* `config.lazy`, so anything mapped here
+-- wins over a plugin's own mappings. Keep plugin-owned keys out of it.
+
 -- delete sends text to 'black hole' instead of clipboard
 -- https://stackoverflow.com/q/54255
 -- keymap.set("n", "d", '"_d')
@@ -12,11 +15,13 @@ keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 keymap.set("n", "<leader>w", ":w<CR>")
 keymap.set("i", "<leader>w", "<ESC>:w<CR>")
--- keymap.set("n", "<leader>q", ":q<CR>")
-keymap.set("", "<leader>q", function(bufnr)
-    Snacks.bufdelete(bufnr)
-end)
 keymap.set("n", "<leader>wq", ":wq<CR>")
+-- keymap.set("n", "<leader>q", ":q<CR>")
+-- Keymap callbacks get no arguments, so the old `function(bufnr)` was always
+-- passing nil. Snacks.bufdelete() already defaults to the current buffer.
+keymap.set("n", "<leader>q", function()
+    Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
 
 -- Buffer cycling (bufferline is disabled, so these use the built-ins)
 keymap.set("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
@@ -64,18 +69,19 @@ keymap.set("i", "<C-c>", "<ESC>")
 -- [[ Basic Keymaps ]]
 --  See `:help keymap.set()`
 
--- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
-keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+-- Off: dead anyway — the <esc><esc> mapping below replaces it, and
+-- 'hlsearch' is disabled in options.lua.
+-- keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
+-- Window navigation. <C-j>/<C-k> are taken by the half-step scroll further
+-- down, so only the horizontal pair is mapped here.
 --  See `:help wincmd` for a list of all window commands
 keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+-- keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+-- keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+keymap.set("n", "<C-w>j", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+keymap.set("n", "<C-w>k", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
 -- Map esc to double esc
 keymap.set({ "n", "i", "v" }, "<esc>", "<esc><esc>", { silent = true })
@@ -93,7 +99,8 @@ keymap.set("v", "y", "ygv<Esc>")
 -- Double slashes // should search for the currently selected string
 keymap.set("v", "//", 'y/\\V<C-R>"<CR>', { noremap = true, silent = false })
 
-keymap.set("n", "<C-S-G>", ":DiffviewOpen<CR>", { noremap = true })
+-- Off: diffview.nvim is not installed. `<leader>lg` opens lazygit instead.
+-- keymap.set("n", "<C-S-G>", ":DiffviewOpen<CR>", { noremap = true })
 
 -- vim.api.nvim_set_keymap("i", "jk", "<Esc>", { noremap = false })
 keymap.set("i", "jk", "<Esc>", { noremap = false })
@@ -102,5 +109,5 @@ keymap.set("i", "jk", "<Esc>", { noremap = false })
 -- keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Center cursor after moving down half-page" })
 -- keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Center cursor after moving down half-page" })
 
-keymap.set("n", "<C-j>", "3jzz")
-keymap.set("n", "<C-k>", "3kzz")
+keymap.set("n", "<C-j>", "3jzz", { desc = "Down 3 lines, recentre" })
+keymap.set("n", "<C-k>", "3kzz", { desc = "Up 3 lines, recentre" })
