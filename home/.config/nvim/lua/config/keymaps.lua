@@ -2,7 +2,6 @@ local keymap = vim.keymap
 
 -- NOTE: this file is required *after* `config.lazy`, so anything mapped here
 -- wins over a plugin's own mappings. Keep plugin-owned keys out of it.
-
 -- delete sends text to 'black hole' instead of clipboard
 -- https://stackoverflow.com/q/54255
 -- keymap.set("n", "d", '"_d')
@@ -113,3 +112,10 @@ keymap.set("i", "jk", "<Esc>", { noremap = false })
 
 keymap.set("n", "<C-j>", "3jzz", { desc = "Down 3 lines, recentre" })
 keymap.set("n", "<C-k>", "3kzz", { desc = "Up 3 lines, recentre" })
+keymap.set("n", "G", "Gzz")
+
+-- Copy the current file’s Windows path
+vim.keymap.set("n", "<leader>cw", function()
+    local p = vim.fn.system({ "wslpath", "-w", vim.fn.expand("%:p") })
+    vim.fn.setreg("+", vim.trim(p))
+end)
