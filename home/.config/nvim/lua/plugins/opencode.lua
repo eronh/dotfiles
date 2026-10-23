@@ -9,7 +9,10 @@ return {
             optional = true,
             opts = {
                 input = {}, -- Enhances `ask()`
-                picker = { -- Enhances `select()`
+                -- These picker opts stay inert: snacks.picker is disabled in
+                -- snacks.lua because Telescope is this config's picker, so
+                -- `select()` falls through to vim.ui.select (telescope-ui-select).
+                picker = {
                     actions = {
                         opencode_send = function(...)
                             return require("opencode").snacks_picker_send(...)
@@ -29,21 +32,29 @@ return {
     config = function()
         ---@type opencode.Opts
         vim.g.opencode_opts = {
-            -- Your configuration, if any; goto definition on the type or field for details
+            -- Reload buffers when opencode edits files on disk. The autocmd in
+            -- config/autocmds.lua runs :checktime on focus/idle, which is what
+            -- makes 'autoread' actually fire.
+            events = { reload = true },
         }
 
-        vim.o.autoread = true -- Required for `opts.events.reload`
+        -- Required for `opts.events.reload`.
+        vim.o.autoread = true
 
-        -- Recommended/example keymaps
-        vim.keymap.set({ "n", "x" }, "<C-a>", function()
+        local opencode = function(fn, ...)
+            local args = { ... }
+            return function()
+                return require("opencode")[fn](unpack(args))
+            end
+        end
+
+        -- <leader>o… instead of the upstream <C-a>/<C-x> example keymaps, which
+        -- shadow the built-in increment/decrement that `+`/`-` map to.
+        vim.keymap.set({ "n", "x" }, "<leader>oa", function()
             require("opencode").ask("@this: ", { submit = true })
         end, { desc = "Ask opencode…" })
-        vim.keymap.set({ "n", "x" }, "<C-x>", function()
-            require("opencode").select()
-        end, { desc = "Execute opencode action…" })
-        vim.keymap.set({ "n", "t" }, "<C-.>", function()
-            require("opencode").toggle()
-        end, { desc = "Toggle opencode" })
+        vim.keymap.set({ "n", "x" }, "<leader>os", opencode("select"), { desc = "Execute opencode action…" })
+        vim.keymap.set({ "n", "t" }, "<C-.>", opencode("toggle"), { desc = "Toggle opencode" })
 
         vim.keymap.set({ "n", "x" }, "go", function()
             return require("opencode").operator("@this ")
@@ -59,8 +70,12 @@ return {
             require("opencode").command("session.half.page.down")
         end, { desc = "Scroll opencode down" })
 
-        -- You may want these if you use the opinionated `<C-a>` and `<C-x>` keymaps above — otherwise consider `<leader>o…` (and remove terminal mode from the `toggle` keymap)
-        vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
-        vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+        -- Off: upstream's opinionated bindings. They took <C-a>/<C-x> and then
+        -- handed increment/decrement to `+`/`-`, which config/keymaps.lua
+        -- already does — so these only served to break <C-a>/<C-x>.
+        -- vim.keymap.set({ "n", "x" }, "<C-a>", ...)  -- ask
+        -- vim.keymap.set({ "n", "x" }, "<C-x>", ...)  -- select
+        -- vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+        -- vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
     end,
 }
