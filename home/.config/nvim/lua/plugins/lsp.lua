@@ -40,7 +40,22 @@ local servers = {
             if name == "" then
                 return
             end
-            local markers = { ".eslintrc", ".eslintrc.json", "eslint.config.js", "eslint.config.mjs" }
+            -- Same list as lspconfig's eslint; the old one missed eslint.config.ts
+            -- and friends, so those projects fell back to ~/Workbench.
+            local markers = {
+                ".eslintrc",
+                ".eslintrc.js",
+                ".eslintrc.cjs",
+                ".eslintrc.yaml",
+                ".eslintrc.yml",
+                ".eslintrc.json",
+                "eslint.config.js",
+                "eslint.config.mjs",
+                "eslint.config.cjs",
+                "eslint.config.ts",
+                "eslint.config.mts",
+                "eslint.config.cts",
+            }
             local found = vim.fs.find(markers, { path = name, upward = true })[1]
             on_dir(found and vim.fs.dirname(found) or vim.fn.expand("~/Workbench"))
         end,
