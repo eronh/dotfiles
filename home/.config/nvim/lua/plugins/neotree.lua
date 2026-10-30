@@ -104,12 +104,31 @@ return {
                 auto_clean_after_session_restore = true, -- Drop broken neo-tree buffers saved in sessions
                 auto_restore_session_experimental = true, -- https://github.com/nvim-neo-tree/neo-tree.nvim/issues/1365
                 open_files_using_relative_paths = true,
+                sort_case_insensitive = true,             -- 'README.md' sorts among 'bootstrap', not before it
                 -- "edgy" matters here: neo-tree lives in an edgy sidebar.
                 open_files_do_not_replace_types = { "terminal", "Trouble", "qf", "edgy" },
 
                 event_handlers = vim.list_extend(opts.event_handlers or {}, {
                     { event = events.FILE_MOVED, handler = on_move },
                     { event = events.FILE_RENAMED, handler = on_move },
+                    {
+                        event = events.NEO_TREE_WINDOW_AFTER_OPEN,
+                        handler = function(args)
+                            if args.source == "filesystem" then
+                                vim.schedule(function()
+                                    vim.cmd("Neotree show position=top buffers")
+                                end)
+                            end
+                        end,
+                    },
+                    {
+                        event = events.AFTER_RENDER,
+                        handler = function(state)
+                            if state.name == "buffers" then
+                                require("edgy.layout").update()
+                            end
+                        end,
+                    },
                 }),
 
                 default_component_configs = {

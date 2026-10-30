@@ -81,10 +81,7 @@ return {
             pattern = "SessionLoadPost",
             group = config_group,
             callback = function()
-                require("neo-tree.command").execute({
-                    show = true,
-                    toggle = false,
-                })
+                require("neo-tree.command").execute({ action = "show" })
             end,
         })
     end,
