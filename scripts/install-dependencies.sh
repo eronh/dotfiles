@@ -1,12 +1,15 @@
 #!/bin/bash
 
 #region package definitions
+# Same name in apt, dnf, pacman, zypper and apk
 PACKAGES_COMMON=(
     "alacritty"
     "bat"
     "curl"
     "direnv"
+    "eza"
     "ffmpeg"
+    "fish"
     "fzf"
     "gawk"
     "git"
@@ -15,8 +18,8 @@ PACKAGES_COMMON=(
     "lazygit"
     "ncdu"
     "neovim"
-    "openssh"
     "ripgrep"
+    "starship"
     "tmux"
     "trash-cli"
     "tree"
@@ -25,11 +28,11 @@ PACKAGES_COMMON=(
     "vlc"
     "wget"
     "yt-dlp"
+    "zoxide"
     "zsh"
 )
 
 PACKAGES_DNF=(
-    "wezterm"
     "fd-find"
     "diff-so-fancy"
     "gh"
@@ -37,6 +40,7 @@ PACKAGES_DNF=(
     "gcc-c++"
     "make"
     "java-latest-openjdk"
+    "openssh-clients"
     "python3"
     "python3-pip"
     "libyaml-devel"
@@ -60,6 +64,7 @@ PACKAGES_APT=(
     "build-essential"
     "libyaml-dev"
     "openjdk-11-jdk"
+    "openssh-client"
     "bpytop"
     "python3"
     "python3-pip"
@@ -74,8 +79,6 @@ PACKAGES_PACMAN=(
     "fd"
     "firefox"
     "firewalld"
-    "firewall-applet"
-    "firewall-config"
     "gnupg"
     "inetutils"
     "intel-ucode"
@@ -83,8 +86,8 @@ PACKAGES_PACMAN=(
     "kdeconnect"
     "konsole"
     "libyaml"
+    "openssh"
     "pacman-contrib"
-    "pactree"
     "python"
     "python-pip"
     "sddm"
@@ -103,6 +106,7 @@ PACKAGES_ZYPPER=(
     "gcc-c++"
     "make"
     "java-21-openjdk"
+    "openssh"
     "python3"
     "python3-pip"
     "libyaml-devel"
@@ -126,6 +130,18 @@ PACKAGES_ZYPPER=(
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/utils.sh"
+
+available_only() {
+    local check="$1" pkg
+    shift
+    for pkg in "$@"; do
+        if $check "$pkg" > /dev/null 2>&1; then
+            echo "$pkg"
+        else
+            log_warning "Not available on this release, skipping: $pkg" >&2
+        fi
+    done
+}
 
 install_dependencies() {
     local os=$(uname -s)
@@ -163,62 +179,45 @@ install_dependencies() {
     fi
 
     local distro=$(detect_os)
-    local pkgs=()
+    local pkgs=("${PACKAGES_COMMON[@]}")
     local install_cmd=""
+    local check_cmd=""
 
-    case "$distro" in
-        ubuntu | debian | kali | neon | pop | pureos | raspbian)
-            pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_APT[@]}")
-            run apt update
-            install_cmd="apt install -y"
-            ;;
-        fedora | centos)
-            local mgr="dnf"
-            if ! command_exists dnf; then mgr="yum"; fi
-            pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_DNF[@]}")
-            install_cmd="$mgr install -y --skip-unavailable"
-            ;;
-        arch | manjaro)
-            pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_PACMAN[@]}")
-            install_cmd="pacman -Sy --noconfirm --needed"
-            ;;
-        opensuse*)
-            pkgs=("${PACKAGES_COMMON[@]}" "${PACKAGES_ZYPPER[@]}")
-            install_cmd="zypper --ignore-unknown install -y"
-            ;;
-        alpine)
-            pkgs=("${PACKAGES_COMMON[@]}" "python3" "build-base")
-            install_cmd="apk add --no-cache"
-            ;;
-        *)
-            # For other distros, try to detect package manager and at least install common packages
-            if command_exists apt; then
-                pkgs=("${PACKAGES_COMMON[@]}")
-                run apt update
-                install_cmd="apt install -y"
-            elif command_exists dnf; then
-                pkgs=("${PACKAGES_COMMON[@]}")
-                install_cmd="dnf install -y --skip-unavailable"
-            elif command_exists pacman; then
-                pkgs=("${PACKAGES_COMMON[@]}")
-                install_cmd="pacman -S --noconfirm --needed"
-            elif command_exists zypper; then
-                pkgs=("${PACKAGES_COMMON[@]}")
-                install_cmd="zypper --ignore-unknown install -y"
-            elif command_exists apk; then
-                pkgs=("${PACKAGES_COMMON[@]}")
-                install_cmd="apk add --no-cache"
-            fi
-            ;;
-    esac
+    if command_exists apt-get; then
+        pkgs+=("${PACKAGES_APT[@]}")
+        run apt-get update
+        check_cmd="apt-get install -s"
+        install_cmd="apt-get install -y"
+    elif command_exists dnf; then
+        pkgs+=("${PACKAGES_DNF[@]}")
+        install_cmd="dnf install -y --skip-unavailable"
+    elif command_exists pacman; then
+        pkgs+=("${PACKAGES_PACMAN[@]}")
+        run pacman -Sy
+        check_cmd="pacman -Sp"
+        # -Su after the -Sy above: installing on top of a partial upgrade is unsupported on Arch
+        install_cmd="pacman -Su --noconfirm --needed"
+    elif command_exists zypper; then
+        pkgs+=("${PACKAGES_ZYPPER[@]}")
+        install_cmd="zypper --ignore-unknown install -y"
+    elif command_exists apk; then
+        pkgs+=("openssh" "python3" "build-base")
+        run apk update
+        check_cmd="apk add -s"
+        install_cmd="apk add --no-cache"
+    else
+        log_warning "No supported package manager found on $distro, skipping package installation."
+        return 0
+    fi
 
-    if [ ${#pkgs[@]} -gt 0 ]; then
-        if ask_confirm "Would you like to install recommended packages for $distro?"; then
-            log_info "Installing dependencies..."
-            run $install_cmd "${pkgs[@]}"
-        else
-            log_info "Skipping package installation."
+    if ask_confirm "Would you like to install recommended packages for $distro?"; then
+        if [ -n "$check_cmd" ]; then
+            mapfile -t pkgs < <(available_only "$check_cmd" "${pkgs[@]}")
         fi
+        log_info "Installing dependencies..."
+        run $install_cmd "${pkgs[@]}"
+    else
+        log_info "Skipping package installation."
     fi
 }
 
