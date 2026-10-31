@@ -63,7 +63,7 @@ PACKAGES_APT=(
     "gnupg"
     "build-essential"
     "libyaml-dev"
-    "openjdk-11-jdk"
+    "default-jdk"
     "openssh-client"
     "bpytop"
     "python3"
@@ -143,6 +143,34 @@ available_only() {
     done
 }
 
+# apt's neovim is older than the 0.11 the config needs before Ubuntu 26.04 / Debian 14,
+# so put the official release build in /opt; /usr/local/bin comes before /usr/bin in PATH.
+# ponytail: installed once, not updated; rm -rf /opt/nvim and re-run to get a newer release
+install_neovim_release() {
+    if command_exists nvim && nvim --clean --headless +'lua os.exit(vim.fn.has("nvim-0.11") == 1 and 0 or 1)'; then
+        return 0
+    fi
+
+    local arch
+    case "$(uname -m)" in
+        x86_64) arch="x86_64" ;;
+        aarch64 | arm64) arch="arm64" ;;
+        *)
+            log_warning "No Neovim release build for $(uname -m), keeping the distro version."
+            return 0
+            ;;
+    esac
+
+    log_info "Distro Neovim is older than 0.11, installing the latest release to /opt/nvim..."
+    run rm -rf /opt/nvim
+    run mkdir -p /opt/nvim
+    if curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-$arch.tar.gz" | run tar -xz --no-same-owner -C /opt/nvim --strip-components=1; then
+        run ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    else
+        log_warning "Neovim download failed, keeping the distro version."
+    fi
+}
+
 install_dependencies() {
     local os=$(uname -s)
 
@@ -216,6 +244,10 @@ install_dependencies() {
         fi
         log_info "Installing dependencies..."
         run $install_cmd "${pkgs[@]}"
+        # The release build is glibc-only, and the other managers ship a recent Neovim anyway
+        if command_exists apt-get; then
+            install_neovim_release
+        fi
     else
         log_info "Skipping package installation."
     fi
