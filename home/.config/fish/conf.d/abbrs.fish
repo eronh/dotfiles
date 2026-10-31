@@ -13,6 +13,7 @@ abbr -a --position anywhere ..... ../../../..
 abbr -a --position anywhere ...... ../../../../..
 
 # tmux
+abbr -a tt  'tmux attach 2>/dev/null; or tmux new-session -A -s H'
 abbr -a tks '~/.tmux/plugins/tmux-resurrect/scripts/save.sh && tmux kill-server'
 abbr -a tkk 'tmux detach'
 
