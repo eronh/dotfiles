@@ -29,12 +29,50 @@ return { -- Collection of various small independent plugins/modules
         --  - ci'  - [C]hange [I]nside [']quote
         require("mini.ai").setup({ n_lines = 500 })
 
-        -- Add/delete/replace surroundings (brackets, quotes, etc.)
+        -- Add/delete/change surroundings, on vim-surround's keys
         --
-        -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-        -- - sd'   - [S]urround [D]elete [']quotes
-        -- - sr)'  - [S]urround [R]eplace [)] [']
-        require("mini.surround").setup()
+        -- - ysiw)  - surround a word             hello    -> (hello)
+        -- - ysiw(  - opening char pads           hello    -> ( hello )
+        -- - yss"   - surround the line           a b      -> "a b"
+        -- - ds"    - delete                      "hello"  -> hello
+        -- - cs"'   - change                      "hello"  -> 'hello'
+        -- - cs{]   - change braces to brackets   {a}      -> [a]       (cs{[ gives [ a ])
+        -- - S)     - surround the Visual selection
+        -- - VjS}   - surround lines: braces on lines of their own, inside indented (ds} undoes it)
+        --
+        -- An opening char pads when adding and trims the padding when deleting or changing;
+        -- a closing char adds none and keeps what's there.
+        --
+        -- Besides brackets and quotes: q = any quote, b = any bracket, t = HTML tag,
+        -- f = function call (dsf: foo(x) -> x, csf renames it), ? = asks for both sides.
+        -- ds and cs also take n/l for the next/previous one: dsl), csn"'
+        require("mini.surround").setup({
+            mappings = {
+                add = "ys",
+                delete = "ds",
+                replace = "cs",
+                find = "",
+                find_left = "",
+                highlight = "",
+            },
+            -- cs"' also works with the cursor before the quotes on the line, not only inside them
+            search_method = "cover_or_next",
+            -- How far up/down to look; mini.ai above uses the same, so ds{ reaches as far as di{
+            n_lines = 500,
+            -- Linewise adds (VS}, ysip}) put surroundings on lines of their own and indent the
+            -- inside; ds} on such a block deletes those lines and dedents it back
+            respect_selection_type = true,
+        })
+        -- vim-surround uses S in Visual mode. Visual ys would also make yanky's y wait for a second key.
+        vim.keymap.del("x", "ys")
+        vim.keymap.set(
+            "x",
+            "S",
+            [[:<C-u>lua MiniSurround.add('visual')<CR>]],
+            { silent = true, desc = "Surround selection" }
+        )
+        -- First to last non-blank, all on one line (ys_ would be linewise: surroundings on lines of their own)
+        vim.keymap.set("n", "yss", "^ysg_", { remap = true, desc = "Surround line" })
 
         -- Simple and easy statusline.
         --  You could remove this setup call if you don't like it,
@@ -98,84 +136,8 @@ return { -- Collection of various small independent plugins/modules
         -- })
 
         require("mini.bufremove").setup()
-        require("mini.pairs").setup({
-            -- In which modes mappings from this `config` should be created
-            modes = { insert = true, command = false, terminal = false },
-
-            -- Global mappings. Each right hand side should be a pair information, a
-            -- table with at least these fields (see more in |MiniPairs.map|):
-            -- - <action> - one of 'open', 'close', 'closeopen'.
-            -- - <pair> - two character string for pair to be used.
-            -- By default pair is not inserted after `\`, quotes are not recognized by
-            -- `<CR>`, `'` does not insert pair after a letter.
-            -- Only parts of tables can be tweaked (others will use these defaults).
-            mappings = {
-                [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]." },
-                ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]." },
-                ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]." },
-                ["["] = {
-                    action = "open",
-                    pair = "[]",
-                    neigh_pattern = ".[%s%z%)}%]]",
-                    register = { cr = false },
-                    -- foo|bar -> press "[" -> foo[bar
-                    -- foobar| -> press "[" -> foobar[]
-                    -- |foobar -> press "[" -> [foobar
-                    -- | foobar -> press "[" -> [] foobar
-                    -- foobar | -> press "[" -> foobar []
-                    -- {|} -> press "[" -> {[]}
-                    -- (|) -> press "[" -> ([])
-                    -- [|] -> press "[" -> [[]]
-                },
-                ["{"] = {
-                    action = "open",
-                    pair = "{}",
-                    -- neigh_pattern = ".[%s%z%)}]",
-                    neigh_pattern = ".[%s%z%)}%]]",
-                    register = { cr = false },
-                    -- foo|bar -> press "{" -> foo{bar
-                    -- foobar| -> press "{" -> foobar{}
-                    -- |foobar -> press "{" -> {foobar
-                    -- | foobar -> press "{" -> {} foobar
-                    -- foobar | -> press "{" -> foobar {}
-                    -- (|) -> press "{" -> ({})
-                    -- {|} -> press "{" -> {{}}
-                },
-                ["("] = {
-                    action = "open",
-                    pair = "()",
-                    -- neigh_pattern = ".[%s%z]",
-                    neigh_pattern = ".[%s%z%)]",
-                    register = { cr = false },
-                    -- foo|bar -> press "(" -> foo(bar
-                    -- foobar| -> press "(" -> foobar()
-                    -- |foobar -> press "(" -> (foobar
-                    -- | foobar -> press "(" -> () foobar
-                    -- foobar | -> press "(" -> foobar ()
-                },
-                -- Single quote: Prevent pairing if either side is a letter
-                ['"'] = {
-                    action = "closeopen",
-                    pair = '""',
-                    neigh_pattern = "[^%w\\][^%w]",
-                    register = { cr = false },
-                },
-                -- Single quote: Prevent pairing if either side is a letter
-                ["'"] = {
-                    action = "closeopen",
-                    pair = "''",
-                    neigh_pattern = "[^%w\\][^%w]",
-                    register = { cr = false },
-                },
-                -- Backtick: Prevent pairing if either side is a letter
-                ["`"] = {
-                    action = "closeopen",
-                    pair = "``",
-                    neigh_pattern = "[^%w\\][^%w]",
-                    register = { cr = false },
-                },
-            },
-        })
+        -- Auto-pairs used to be mini.pairs; now config/autopairs.lua, which reads
+        -- the whole line rather than one character on each side of the cursor.
 
         vim.api.nvim_create_user_command("CloseAllExceptNeoTree", close_all_buffers_except_neotree, {})
         vim.keymap.set("", "<leader>bw", "<cmd>lua MiniBufremove.delete()<CR>")

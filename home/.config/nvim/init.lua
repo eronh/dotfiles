@@ -3,6 +3,7 @@ vim.loader.enable() -- cache lua modules (https://github.com/neovim/neovim/pull/
 require("config.options")
 require("config.lazy")
 require("config.keymaps")
+require("config.autopairs")
 require("config.autocmds")
 require("config.usercmds")
 
