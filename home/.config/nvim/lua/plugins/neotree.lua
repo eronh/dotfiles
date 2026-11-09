@@ -2,11 +2,40 @@
 -- full annotated default config is upstream in `lua/neo-tree/defaults.lua`, or
 -- `:h neo-tree-configuration`; it used to be pasted into this file in full.
 
-local toggle_focus_keymap = "\\"
-local toggle_reveal_keymap = "<C-\\>"
+-- Each key focuses its pane, and pressed again inside that pane goes back to
+-- the editor. From the other pane it falls through to the global mapping, so
+-- `\` and `<C-\>` also hop between Open Editors and Files.
+local open_editors_keymap = "<C-\\>"
+local files_keymap = "\\"
 
-local function focus_left_window()
-    vim.cmd("wincmd h")
+-- Ctrl+Shift+\ reaches nvim as <C-S-\> (CSI 92;6u) or <C-|> (CSI 124;5u),
+-- depending on the terminal. Windows Terminal needs a sendInput binding for
+-- it, or it sends the same byte as Ctrl+\.
+local toggle_keymaps = { "<C-S-\\>", "<C-|>" }
+
+-- The sidebar is on the left, so the editor is to its right.
+local function focus_editor()
+    vim.cmd("wincmd l")
+end
+
+-- Hide every neo-tree window in the tab, or bring the sidebar back without
+-- moving the cursor (opening Files pulls Open Editors in with it).
+local function toggle_sidebar()
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "neo-tree" then
+            vim.cmd("Neotree close")
+            return
+        end
+    end
+    vim.cmd("Neotree show filesystem")
+end
+
+local keys = {
+    { open_editors_keymap, "<Cmd>Neotree focus position=top buffers<CR>", desc = "NeoTree: focus open editors" },
+    { files_keymap,        "<Cmd>Neotree focus filesystem<CR>",           desc = "NeoTree: focus files" },
+}
+for _, lhs in ipairs(toggle_keymaps) do
+    table.insert(keys, { lhs, toggle_sidebar, desc = "NeoTree: toggle sidebar" })
 end
 
 return {
@@ -15,17 +44,13 @@ return {
         branch = "v3.x",
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
             "MunifTanjim/nui.nvim",
         },
 
         -- Was "Neotree focus", which is not a valid command name — only the
         -- `keys` below were actually loading the plugin.
         cmd = "Neotree",
-        keys = {
-            { toggle_focus_keymap, ":Neotree focus last<CR>", desc = "NeoTree focus", silent = true },
-            { toggle_reveal_keymap, ":Neotree reveal last<CR>", desc = "NeoTree reveal", silent = true },
-        },
+        keys = keys,
 
         deactivate = function()
             vim.cmd([[Neotree close]])
@@ -114,9 +139,13 @@ return {
                     {
                         event = events.NEO_TREE_WINDOW_AFTER_OPEN,
                         handler = function(args)
-                            if args.source == "filesystem" then
+                            local partner = ({
+                                filesystem = "position=top buffers",
+                                buffers = "filesystem",
+                            })[args.source]
+                            if partner then
                                 vim.schedule(function()
-                                    vim.cmd("Neotree show position=top buffers")
+                                    vim.cmd("Neotree show " .. partner)
                                 end)
                             end
                         end,
@@ -139,12 +168,10 @@ return {
                 },
 
                 window = {
-                    position = "right", -- edgy pins this side; see edgy.lua
-                    width = 48, -- keep in step with edgy's `right = { size = 48 }`
+                    position = "left", -- edgy pins this side; see edgy.lua
+                    width = 48, -- keep in step with edgy's `left = { size = 48 }`
                     mappings = {
-                        ["<Esc>"] = focus_left_window,
-                        [toggle_focus_keymap] = focus_left_window,
-                        [toggle_reveal_keymap] = "close_window",
+                        ["<Esc>"] = focus_editor,
                         ["b"] = "close_node",
                         ["d"] = "trash", -- default is "delete"
                         -- Default binds these to <C-b>/<C-f>.
@@ -166,6 +193,7 @@ return {
                     window = {
                         mappings = {
                             ["d"] = "trash",
+                            [files_keymap] = focus_editor,
                         },
                     },
                     bind_to_cwd = false,
@@ -185,6 +213,11 @@ return {
                 },
 
                 buffers = {
+                    window = {
+                        mappings = {
+                            [open_editors_keymap] = focus_editor,
+                        },
+                    },
                     bind_to_cwd = false,
                     follow_current_file = {
                         enabled = true,

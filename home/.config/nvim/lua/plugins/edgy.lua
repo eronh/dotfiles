@@ -20,7 +20,7 @@ return {
     "folke/edgy.nvim",
     event = "VeryLazy",
     opts = {
-        right = {
+        left = {
             {
                 title = "Open Editors",
                 ft = "neo-tree",
@@ -35,13 +35,13 @@ return {
                 ft = "neo-tree",
                 filter = neo_tree_source("filesystem"),
                 pinned = true,
-                open = "Neotree position=right filesystem",
+                open = "Neotree position=left filesystem",
             },
             -- any other neo-tree windows (git_status, document_symbols)
             "neo-tree",
         },
         options = {
-            right = { size = 48 },
+            left = { size = 48 },
         },
         animate = { enabled = false },
     },
