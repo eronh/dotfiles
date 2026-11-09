@@ -1,0 +1,51 @@
+# Paths the default Telescope searches and :grep skip (gitignore syntax).
+#
+# Those searches ignore .gitignore, so git-ignored files that matter (.env,
+# local config) still show up; this list keeps generated and vendored
+# directories out instead. To search these too, use the "all files" variants:
+# <leader>sG / <leader>fF / <leader>sW, or <M-i> inside the picker.
+#
+# A project that tracks one of these (say a real `build/` dir) can re-include
+# it with `!build/` in its own .ignore, which takes precedence over this file.
+
+# Dependencies
+node_modules/
+bower_components/
+jspm_packages/
+vendor/
+.venv/
+venv/
+.yarn/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+out/
+target/
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+.angular/
+.vercel/
+.netlify/
+.expo/
+.gradle/
+*.egg-info/
+.terraform/
+
+# Caches, coverage
+.cache/
+.parcel-cache/
+.turbo/
+.nx/
+.eslintcache
+coverage/
+.nyc_output/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.direnv/

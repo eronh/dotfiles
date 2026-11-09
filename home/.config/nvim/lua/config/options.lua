@@ -69,7 +69,8 @@ opt.hlsearch = false
 opt.ignorecase = true
 opt.smartcase = true
 opt.inccommand = "split"     -- Preview :s matches in a split
-opt.grepprg = "rg --vimgrep" -- Unlike nvim's default (`-uu`), respects .gitignore
+opt.grepprg = "rg --vimgrep --hidden --no-ignore-vcs --glob='!.git' --ignore-file="
+    .. vim.fn.shellescape(vim.fn.stdpath("config") .. "/rg-ignore")
 opt.grepformat = "%f:%l:%c:%m"
 
 -- Files and undo
