@@ -13,6 +13,9 @@ enter = "mise install --quiet"
 experimental = true
 jobs = 8
 
+[settings.self_update]
+auto = true
+
 [shell_alias]
 p = "pnpm"
 px = "pnpx"
