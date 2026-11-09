@@ -16,7 +16,8 @@
   editor = nvim
   autocrlf = input
   fileMode = false
-  pager = diff-so-fancy | less --tabs=4 -RFX
+  # diff-so-fancy isn't packaged for Debian/Ubuntu/Alpine; fall back to plain less there
+  pager = "(command -v diff-so-fancy > /dev/null && diff-so-fancy || cat) | less --tabs=4 -RFX"
   hooksPath = ~/.config/git/hooks
 
 [diff]
