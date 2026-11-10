@@ -30,6 +30,20 @@ local function toggle_sidebar()
     vim.cmd("Neotree show filesystem")
 end
 
+local function icon_provider(icon, node)
+    if node.type == "directory" then
+        local glyph, hl, is_default = MiniIcons.get("directory", node.name)
+        if is_default then
+            local bare = node.name:lower():gsub("^[._]+", ""):gsub("_+$", "")
+            glyph, hl, is_default = MiniIcons.get("directory", bare)
+        end
+        if not is_default then
+            icon.text, icon.highlight = glyph, hl
+        end
+    elseif node.type == "file" or node.type == "terminal" then
+        icon.text, icon.highlight = MiniIcons.get("file", node.type == "terminal" and "terminal" or node.name)
+    end
+end
 local keys = {
     { open_editors_keymap, "<Cmd>Neotree focus position=top buffers<CR>", desc = "NeoTree: focus open editors" },
     { files_keymap,        "<Cmd>Neotree focus filesystem<CR>",           desc = "NeoTree: focus files" },
@@ -161,6 +175,7 @@ return {
                 }),
 
                 default_component_configs = {
+                    icon = { provider = icon_provider },
                     name = {
                         trailing_slash = true,
                         highlight_opened_files = true, -- Requires `enable_opened_markers = true` (default)

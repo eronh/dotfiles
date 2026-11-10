@@ -21,6 +21,10 @@ return { -- Collection of various small independent plugins/modules
     "echasnovski/mini.nvim",
     version = "*",
     config = function()
+        require("mini.icons").setup({
+            style = vim.g.have_nerd_font and "glyph" or "ascii",
+        })
+        MiniIcons.mock_nvim_web_devicons()
         -- Better Around/Inside textobjects
         --
         -- Examples:
