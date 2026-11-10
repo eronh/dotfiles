@@ -6,6 +6,7 @@ require("config.keymaps")
 require("config.autopairs")
 require("config.autocmds")
 require("config.usercmds")
+require("config.git_history")
 require("config.palette")
 
 -- The colorscheme picker (<leader>tt, plugins/colorschemes.lua) rewrites this line.
