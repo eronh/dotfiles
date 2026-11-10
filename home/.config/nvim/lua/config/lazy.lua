@@ -14,6 +14,12 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- lazy's rtp reset looks for Neovim's bundled parsers in "<prefix>/lib64/nvim" whenever
+-- "<prefix>/lib64" exists. Debian/Ubuntu have a /usr/lib64 (it holds ld.so) but the apt
+-- Neovim keeps its parsers in /usr/lib/nvim, so lua, vim, markdown, c... lost their
+-- parser and opening a .lua file errored out of the stock ftplugin. Add the real libdir.
+local nvim_lib = vim.fn.fnamemodify(vim.v.progpath, ":p:h:h") .. "/lib/nvim"
+
 -- NOTE: everything below has to be in ONE table. `lazy.setup(spec, opts)` uses
 -- the first argument as the whole config as soon as it contains a `spec` key,
 -- and silently drops the second — so when these were split across two tables,
@@ -41,6 +47,7 @@ require("lazy").setup({
     },
     performance = {
         rtp = {
+            paths = (vim.uv or vim.loop).fs_stat(nvim_lib) and { nvim_lib } or {},
             -- Built-in plugins this config doesn't use.
             disabled_plugins = { "gzip", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
         },
