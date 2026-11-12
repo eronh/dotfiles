@@ -30,6 +30,88 @@ local function toggle_sidebar()
     vim.cmd("Neotree show filesystem")
 end
 
+-- Directories of installed or generated files. Opening a file inside one
+-- expands it in the tree (follow_current_file + leave_dirs_open), and nothing
+-- collapses it again, so once the file is closed the tree collapses it here.
+local collapse_on_close = {}
+for _, names in ipairs({
+    { "node_modules", "bower_components", ".yarn", ".pnpm-store", "vendor" }, -- dependencies
+    { "dist", "build", "out", "target", "coverage" }, -- build output
+    { ".next", ".nuxt", ".svelte-kit", ".turbo", ".angular", ".parcel-cache", ".gradle" }, -- tool caches
+    { ".venv", "venv", "__pycache__", "site-packages", ".tox", ".mypy_cache", ".pytest_cache" }, -- Python
+    { ".git" },
+}) do
+    for _, name in ipairs(names) do
+        collapse_on_close[name] = true
+    end
+end
+
+local function open_file_paths()
+    local paths = {}
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.bo[buf].buflisted and vim.bo[buf].buftype == "" then
+            local name = vim.api.nvim_buf_get_name(buf)
+            if name ~= "" then
+                table.insert(paths, name)
+            end
+        end
+    end
+    return paths
+end
+
+local function holds_open_file(dir, open_paths)
+    return vim.iter(open_paths):any(function(p)
+        return vim.fs.relpath(dir, p) ~= nil
+    end)
+end
+
+-- The outermost collapse-on-close dir between `root` and the closed file, or,
+-- when other open files still live under it, the outermost dir further down
+-- that holds none of them. Nil if the file isn't under such a dir.
+local function dir_to_collapse(root, path, open_paths)
+    local rel = vim.fs.relpath(root, path)
+    if not rel then
+        return nil
+    end
+    local parts = vim.split(rel, "/", { plain = true })
+    local dir, inside = root, false
+    for i = 1, #parts - 1 do
+        dir = vim.fs.joinpath(dir, parts[i])
+        inside = inside or collapse_on_close[parts[i]] == true
+        if inside and not holds_open_file(dir, open_paths) then
+            return dir
+        end
+    end
+end
+
+-- Collapse the dir (and every dir expanded under it) in each tab's Files tree.
+local function collapse_dirs_of_closed_files(closed)
+    local renderer = require("neo-tree.ui.renderer")
+    local open_paths = open_file_paths()
+    require("neo-tree.sources.manager")._for_each_state("filesystem", function(state)
+        local tree = state.tree
+        if not (tree and state.path) then
+            return
+        end
+        local changed = false
+        for _, path in ipairs(closed) do
+            local dir = dir_to_collapse(state.path, path, open_paths)
+            if dir and tree:get_node(dir) then
+                for _, id in ipairs(renderer.get_expanded_nodes(tree, dir)) do
+                    tree:get_node(id):collapse()
+                    if state.explicitly_opened_nodes then
+                        state.explicitly_opened_nodes[id] = nil
+                    end
+                    changed = true
+                end
+            end
+        end
+        if changed then
+            renderer.redraw(state)
+        end
+    end)
+end
+
 local function icon_provider(icon, node)
     if node.type == "directory" then
         local glyph, hl, is_default = MiniIcons.get("directory", node.name)
@@ -100,6 +182,28 @@ return {
             local function on_move(data)
                 Snacks.rename.on_rename_file(data.source, data.destination)
             end
+
+            -- Closing several buffers at once (e.g. "close all") is handled
+            -- in one pass once they're all gone from the buffer list.
+            local closed_files = {}
+            vim.api.nvim_create_autocmd("BufDelete", {
+                group = vim.api.nvim_create_augroup("Neotree_collapse_on_close", { clear = true }),
+                desc = "Collapse dependency/build dirs in neo-tree once their files are closed",
+                callback = function(args)
+                    local name = vim.api.nvim_buf_get_name(args.buf)
+                    if vim.bo[args.buf].buftype ~= "" or name == "" then
+                        return
+                    end
+                    if #closed_files == 0 then
+                        vim.schedule(function()
+                            local batch = closed_files
+                            closed_files = {}
+                            collapse_dirs_of_closed_files(batch)
+                        end)
+                    end
+                    table.insert(closed_files, name)
+                end,
+            })
 
             vim.api.nvim_create_autocmd("TermClose", {
                 pattern = "*lazygit",
