@@ -217,7 +217,18 @@ local items = {
             end)
         end,
     },
-    { name = "Go to Symbol in Editor", keys = "<leader>ds", when = has_lsp },
+    {
+        -- Functions, methods, classes, variables, ... in the current file,
+        -- from the language server or, without one, Treesitter.
+        name = "Go to Symbol in Editor (Symbols in Active File)",
+        keys = "<leader>ds",
+        when = function()
+            return vim.bo.buftype == ""
+        end,
+        run = function()
+            require("config.symbols").document()
+        end,
+    },
     { name = "Go to Symbol in Workspace", keys = "<leader>ws", when = has_lsp },
     { name = "Go to Definition", keys = "gd", when = has_lsp },
     { name = "Go to References", keys = "gr", when = has_lsp },
