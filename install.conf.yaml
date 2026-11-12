@@ -63,6 +63,11 @@
 
     - description: "Install alacritty themes"
       command: |
+        # Only when alacritty is installed (PATH binary, or the macOS app bundle when the cask didn't link one)
+        if ! command -v alacritty >/dev/null 2>&1 && [ ! -d /Applications/Alacritty.app ]; then
+          echo "alacritty is not installed, skipping themes"
+          exit 0
+        fi
         THEMES_DIR=$HOME/.config/alacritty/themes
         REPO_URL=https://github.com/alacritty/alacritty-theme
         if [ ! -d "$THEMES_DIR" ] ; then
