@@ -29,7 +29,10 @@ local servers = {
     taplo = {},
 
     ts_ls = {
-        root_markers = { "package.json", "tsconfig.json", ".git" },
+        init_options = {
+            disableAutomaticTypingAcquisition = true,
+            tsserver = { useSyntaxServer = "never" },
+        },
     },
 
     eslint = {
